@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-17T20:51:12.017Z",
+  "source": "https://github.com/tsuza/tf2-item-schema",
+  "itemsGameUrl": "http://media.steampowered.com/apps/440/scripts/items/items_game.ed1c608b1f7f298b548aa851753f80c5294a452e.txt",
+  "englishNames": "tf_english.txt (local TF2 install)",
+  "counts": {
+    "cosmetics": 9631,
+    "paints": 29,
+    "effects": 406
+  },
+  "classes": [
+    "scout",
+    "soldier",
+    "pyro",
+    "demoman",
+    "heavy",
+    "engineer",
+    "medic",
+    "sniper",
+    "spy"
+  ],
+  "regionConflicts": {
+    "glasses": [
+      "face",
+      "lenses"
+    ],
+    "whole_head": [
+      "hat",
+      "face",
+      "glasses"
+    ]
+  },
+  "notice": "Item metadata is from Valve's public TF2 item schema. Team Fortress 2 and its items are trademarks and copyright of Valve Corporation."
+}
