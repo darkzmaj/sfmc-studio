@@ -26,7 +26,7 @@ const ff = (args) => execFileSync('ffmpeg', ['-y', '-hide_banner', '-loglevel', 
 // Recorded segment windows.
 const segs = tl.segments;
 const win = (id) => { const i = segs.findIndex((s) => s.id === id); return i < 0 ? null : { a: segs[i].t, b: segs[i + 1].t }; };
-const focusFor = (id) => { const w = win(id); const f = tl.focuses.filter((x) => x.t >= w.a - 0.05 && x.t < w.b); return f.at(-1) ?? f[0]; };
+const focusFor = (id) => { const w = win(id); const f = tl.focuses.filter((x) => x.t >= w.a - 0.05 && x.t < w.b); return id === 'intro' ? f[0] : f.at(-1) ?? f[0]; };
 
 // Variable-rate frames -> one constant-rate master (source resolution) for trimming.
 const list = tl.frames.map((f, i) => `file '${join(raw, 'frames', f.name).replace(/\\/g, '/')}'\nduration ${Math.max(0.001, (tl.frames[i + 1]?.t ?? f.t + 0.1) - f.t).toFixed(4)}`).join('\n');

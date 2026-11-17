@@ -103,7 +103,7 @@ await focus('.tryout-list', 1.25);
 await type(search, ITEMS[2].slice(0, 12));
 await wait(350);
 const opt = page.getByRole('option', { name: new RegExp(ITEMS[2].replace(/[.*+?^${}()|[\]\\]/g, '\\$&')) }).first();
-await moveTo(opt.locator('.price-tag').first().or(opt));
+await moveTo(opt, { fx: 0.85 });
 await wait(500);
 await click(opt, 1200);
 
