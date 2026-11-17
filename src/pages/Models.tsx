@@ -7,7 +7,7 @@ import { deleteCustomType, putCustomType, uid } from '../lib/db';
 import { download } from '../lib/exporters';
 import { useApp } from '../state/app';
 import { newCharacter, useEditor } from '../state/editor';
-import { availabilityBadge } from '../editor/LeftPanel';
+import { availabilityBadge, useVisibleTypes } from '../editor/LeftPanel';
 import { Modal, useConfirm } from '../components/ui';
 import { normalizePath } from '../lib/source/vpk';
 
@@ -24,7 +24,8 @@ export function validateType(raw: unknown): CharacterType {
 }
 
 export default function Models() {
-  const { types, refreshTypes, toast, settings } = useApp();
+  const { refreshTypes, toast, settings } = useApp();
+  const types = useVisibleTypes();
   useApp((s) => s.assetsVersion);
   const [editing, setEditing] = useState<CharacterType | null>(null);
   const [confirm, confirmEl] = useConfirm();
@@ -71,7 +72,7 @@ export default function Models() {
           <tbody>
             {types.map((t) => (
               <tr key={t.id}>
-                <td><strong style={{ fontWeight: 600 }}>{t.name}</strong><div className="hint">{t.tags.slice(0, 4).join(', ')}</div></td>
+                <td><strong style={{ fontWeight: 600 }}>{t.name}</strong>{t.mature && <span className="badge warn" style={{ marginLeft: 6 }}>18+</span>}<div className="hint">{t.tags.slice(0, 4).join(', ')}</div></td>
                 <td>{t.category.replace('-', ' ')}</td>
                 <td>{t.source.url ? <a href={t.source.url} rel="noopener" target="_blank">{t.source.label} <ExternalLink size={11} /></a> : t.source.label}</td>
                 <td><code className="hint">{t.modelPath ?? '(link on Imports page)'}</code></td>
@@ -108,6 +109,7 @@ export default function Models() {
               <label className="field"><span>BLU skin</span><input className="input" type="number" min={0} value={editing.teamSkins?.blu ?? 1} onChange={(e) => setEditing({ ...editing, teamSkins: { red: editing.teamSkins?.red ?? 0, blu: Number(e.target.value) } })} /></label>
             </div>
             <label className="field"><span>Tags (comma separated)</span><input className="input" value={editing.tags.join(', ')} onChange={(e) => setEditing({ ...editing, tags: e.target.value.split(',').map((s) => s.trim()) })} /></label>
+            <label className="check"><input type="checkbox" checked={!!editing.mature} onChange={(e) => setEditing({ ...editing, mature: e.target.checked })} />18+ model (hidden until a visitor confirms their age)</label>
             <label className="field"><span>Attribution</span><input className="input" placeholder="Model by …" value={editing.attribution} onChange={(e) => setEditing({ ...editing, attribution: e.target.value })} /></label>
             <label className="field"><span>Compatibility notes</span><textarea className="textarea" rows={3} value={editing.notes} onChange={(e) => setEditing({ ...editing, notes: e.target.value })} /></label>
           </div>

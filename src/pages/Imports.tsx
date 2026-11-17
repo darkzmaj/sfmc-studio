@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react';
 import { FolderOpen, Link2, Trash2, Upload, RefreshCw, FileArchive, Unlink } from 'lucide-react';
 import { linkDirectory, linkFileList, mountImports, restoreTf2, supportsDirectoryPicker, unlinkTf2 } from '../lib/tf2files';
-import { fromFileList, fromZip, importFiles, LIMITS, type ImportReport } from '../lib/importer';
+import { fromDrop, fromFileList, fromZip, importFiles, LIMITS, nameFromModelPath, type ImportReport } from '../lib/importer';
+import { useNavigate } from 'react-router';
+import { newCharacter, useEditor } from '../state/editor';
+import type { CharacterType } from '../lib/types';
 import { deletePack, listFiles, listPacks, putBlob, putCustomType, uid } from '../lib/db';
 import { getTypeLinks, setTypeLink } from '../lib/catalog';
 import { assets } from '../lib/source/assets';
@@ -10,7 +13,7 @@ import { useApp } from '../state/app';
 import { Notice, fmtBytes, useConfirm } from '../components/ui';
 
 export default function Imports() {
-  const { tf2, setTf2, toast, types, refreshTypes } = useApp();
+  const { tf2, setTf2, toast, types, refreshTypes, hosted } = useApp();
   useApp((s) => s.assetsVersion);
   const [busy, setBusy] = useState(false);
   const [packs, setPacks] = useState<ImportPack[]>([]);
@@ -21,6 +24,25 @@ export default function Imports() {
   const [packName, setPackName] = useState('');
   const [sourceNote, setSourceNote] = useState('');
   const [redistributable, setRedistributable] = useState(false);
+  const [mature, setMature] = useState(false);
+  const [lastMature, setLastMature] = useState(false);
+  const [dragging, setDragging] = useState(false);
+  const nav = useNavigate();
+  const loadEditor = useEditor((s) => s.load);
+  const matureOk = useApp((s) => s.settings.matureConfirmed);
+  /** One click: register an imported .mdl as a model type and open it in the editor. */
+  const createFrom = async (path: string, isMature: boolean) => {
+    const existing = types.find((t) => t.modelPath === path && !t.builtin);
+    const t: CharacterType = existing ?? {
+      id: `custom.${uid().slice(0, 8)}`, name: nameFromModelPath(path), category: 'custom', tags: ['imported'], source: { kind: 'local-import', label: 'Imported model' },
+      modelPath: path, teams: ['red', 'blu'], teamSkins: { red: 0, blu: 1 }, skeleton: 'unknown', attribution: '', notes: 'Imported on the Imports page.', builtin: false, mature: isMature,
+    };
+    if (!existing) { await putCustomType(t); await refreshTypes(); }
+    if (t.mature && !matureOk) { toast('Saved as an 18+ model. Confirm your age in Settings or in the model picker to open it.'); return; }
+    const c = newCharacter(t.id, 'red', `New ${t.name}`);
+    loadEditor(c, { dirty: true });
+    nav(`/editor/${c.id}`);
+  };
   const [confirm, confirmEl] = useConfirm();
   const refresh = async () => { setPacks(await listPacks()); setFiles(await listFiles()); setLinks(await getTypeLinks()); };
   useEffect(() => { void refresh(); }, []);
@@ -42,10 +64,11 @@ export default function Imports() {
       const list = await candidates;
       const r = await importFiles(list, packName.trim() || `Import ${new Date().toLocaleString()}`, { redistributable, sourceNote: sourceNote.trim() }, (done, total, label) => setProgress({ done, total, label }));
       setReport(r);
+      setLastMature(mature);
       await mountImports();
       await refresh();
       toast(`Imported ${r.accepted.length} files${r.rejected.length ? `, rejected ${r.rejected.length}` : ''}`, r.accepted.length ? 'success' : 'error');
-      setPackName(''); setSourceNote(''); setRedistributable(false);
+      setPackName(''); setSourceNote(''); setRedistributable(false); setMature(false);
     } catch (e) { toast((e as Error).message, 'error'); }
     finally { setBusy(false); setProgress(null); }
   };
@@ -72,6 +95,16 @@ export default function Imports() {
       </div>
 
       <section className="card card-pad stack">
+        <h2>Where to get model files</h2>
+        <div className="sources">
+          <div><h3>Team Fortress 2: the nine classes and all cosmetics</h3><p className="hint">Already on your PC if TF2 is installed. In Steam: right-click <strong>Team Fortress 2</strong>, then <strong>Manage</strong>, then <strong>Browse local files</strong>, and open the <code>tf</code> folder. Choose that folder below.{hosted ? ' This site also hosts these models, so you can skip this step.' : ''}</p></div>
+          <div><h3>Steam Workshop for Source Filmmaker</h3><p className="hint">Community characters such as Saxton Hale and female class variants. Browse <a href="https://steamcommunity.com/app/1840/workshop/" target="_blank" rel="noopener noreferrer">steamcommunity.com/app/1840/workshop</a> and subscribe; SFM downloads items into <code>SourceFilmmaker/game/workshop</code>. Drop that item's folder here.</p></div>
+          <div><h3>SFMLab</h3><p className="hint"><a href="https://sfmlab.com" target="_blank" rel="noopener noreferrer">sfmlab.com</a> hosts free community SFM models as ZIP downloads; drop the ZIP here. Its adult section needs an account and age verification on SFMLab. Tick 18+ below for those imports.</p></div>
+          <div><h3>Check the licence</h3><p className="hint">Community models belong to their creators. Using them in your own films is usually fine; re-uploading them is not, unless the author allows it.</p></div>
+        </div>
+      </section>
+
+      <section className="card card-pad stack">
         <div className="row"><h2>Team Fortress 2 files</h2><span className="spacer" />
           <span className={`badge ${tf2 === 'linked' ? 'ok' : tf2 === 'needs-permission' ? 'warn' : ''}`}>{tf2 === 'linked' ? 'Linked' : tf2 === 'needs-permission' ? 'Permission needed' : 'Not linked'}</span></div>
         <p className="hint">Select your <code>Team Fortress 2</code> folder (or its <code>tf</code> subfolder), usually <code>Steam/steamapps/common/Team Fortress 2</code>. The browser reads <code>tf2_misc</code> and <code>tf2_textures</code> VPKs in place, on demand. No game data is copied or uploaded.</p>
@@ -93,6 +126,12 @@ export default function Imports() {
           <label className="field"><span>Name for this import</span><input className="input" placeholder="FemScout by …" value={packName} onChange={(e) => setPackName(e.target.value)} /></label>
           <label className="field"><span>Source or Workshop link (for your records)</span><input className="input" placeholder="https://steamcommunity.com/sharedfiles/…" value={sourceNote} onChange={(e) => setSourceNote(e.target.value)} /></label>
         </div>
+        <div className={`dropzone ${dragging ? 'over' : ''}`} onDragOver={(e) => { e.preventDefault(); setDragging(true); }} onDragLeave={() => setDragging(false)}
+          onDrop={(e) => { e.preventDefault(); setDragging(false); if (!busy) void runImport(fromDrop(e.dataTransfer)); }}>
+          <strong>Drop a model folder or ZIP here</strong>
+          <span className="hint">Workshop and SFMLab downloads work as they are: anything with a <code>models/</code> folder (usually plus <code>materials/</code>) inside.</span>
+        </div>
+        <label className="check"><input type="checkbox" checked={mature} onChange={(e) => setMature(e.target.checked)} />This is 18+ content (its models stay hidden until age is confirmed)</label>
         <label className="check"><input type="checkbox" checked={redistributable} onChange={(e) => setRedistributable(e.target.checked)} />I made these files or have permission to redistribute them (allows including them in exported bundles)</label>
         <div className="row wrap">
           <label className="btn primary"><FolderOpen />Choose folder
@@ -107,7 +146,12 @@ export default function Imports() {
         {progress && <div className="stack" style={{ gap: 6 }} aria-live="polite"><div className="progress"><div style={{ width: `${(progress.done / Math.max(1, progress.total)) * 100}%` }} /></div><span className="hint">{progress.done} / {progress.total} · {progress.label}</span></div>}
         {report && (
           <div className="stack" style={{ gap: 6 }}>
-            <p><strong>{report.accepted.length}</strong> files imported{report.models.length ? `, including ${report.models.length} model${report.models.length === 1 ? '' : 's'}` : ''}. Link a model to a catalog entry below.</p>
+            <p><strong>{report.accepted.length}</strong> files imported{report.models.length ? `, including ${report.models.length} model${report.models.length === 1 ? '' : 's'}` : ''}.</p>
+            {report.models.filter((m) => m.endsWith('.mdl')).slice(0, 12).map((m) => (
+              <div key={m} className="row wrap"><code style={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis' }}>{m}</code>
+                <button className="btn primary sm" onClick={() => void createFrom(m, lastMature)}>Create character</button></div>
+            ))}
+            {report.models.length > 12 && <p className="hint">More models are listed in the table below.</p>}
             {report.rejected.length > 0 && <details><summary className="hint">{report.rejected.length} files rejected</summary><ul className="hint">{report.rejected.slice(0, 200).map((r, i) => <li key={i}><code>{r.name}</code>: {r.reason}</li>)}</ul></details>}
           </div>
         )}
@@ -119,7 +163,7 @@ export default function Imports() {
         {models.length > 0 && (
           <div className="card" style={{ overflowX: 'auto' }}>
             <table className="table">
-              <thead><tr><th>Model</th><th>Import</th><th>Used by</th><th>Link to</th></tr></thead>
+              <thead><tr><th>Model</th><th>Import</th><th>Used by</th><th>Link to</th><th></th></tr></thead>
               <tbody>
                 {models.map((m) => {
                   const linkedTo = Object.entries(links).filter(([, p]) => p === m.path).map(([k]) => types.find((t) => t.id === k)?.name ?? k);
@@ -132,6 +176,7 @@ export default function Imports() {
                         <option value="">Choose an entry…</option>
                         {linkable.map((t) => <option key={t.id} value={t.id}>{t.name}{links[t.id] ? ' (replace link)' : ''}</option>)}
                       </select></td>
+                      <td><button className="btn sm" onClick={() => void createFrom(m.path, false)}>Create character</button></td>
                     </tr>
                   );
                 })}

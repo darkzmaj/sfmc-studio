@@ -1,5 +1,6 @@
 # Local or Coolify (Docker Compose build pack) deployment.
-# No volumes: the server holds no data. Visitor projects live in their browsers.
+# Visitor projects live in their browsers; the server never stores them.
+# Optional read-only volume: the TF2 asset pack built by scripts/asset-pack.ts (operator's choice).
 services:
   sfmc-studio:
     build: .
@@ -7,6 +8,8 @@ services:
     restart: unless-stopped
     ports:
       - "${PORT:-8080}:8080"
+    volumes:
+      - ${ASSET_PACK:-./asset-pack}:/usr/share/nginx/html/tf2:ro
     read_only: true
     tmpfs:
       - /tmp

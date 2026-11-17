@@ -42,7 +42,7 @@ function Privacy() {
       </ul>
       <p>Download regular ZIP backups from the <Link to="/backups">Backups</Link> page.</p>
       <h2>Network requests</h2>
-      <p>The site loads its own code, fonts and catalog files from this domain only. It uses no analytics, no trackers, no advertising and no third-party scripts or fonts. A strict Content Security Policy blocks connections to other hosts. The server keeps standard access logs (IP address, time, requested file) as any web server does; these never include your project data.</p>
+      <p>The site loads its own code, fonts, catalog files and (where the operator hosts them) TF2 model files from this domain only. Steam Market links open steamcommunity.com only when you click them. It uses no analytics, no trackers, no advertising and no third-party scripts or fonts. A strict Content Security Policy blocks connections to other hosts. The server keeps standard access logs (IP address, time, requested file) as any web server does; these never include your project data.</p>
       <h2>Imported files</h2>
       <p>Imported files are validated (allowed types, size limits, header checks, safe paths) and are only ever parsed as data. They cannot run scripts. Character files and backups you import are checked against the expected format before anything is stored.</p>
       <p>Questions: see the contact details at <a href={APP.authorUrl} rel="noopener">darkzmaj.eu</a>.</p>

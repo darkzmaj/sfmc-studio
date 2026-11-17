@@ -3,6 +3,7 @@ import { assets } from '../lib/source/assets';
 import { loadAllTypes } from '../lib/catalog';
 import { getSettings, setSettings } from '../lib/db';
 import { mountImports, restoreTf2, tf2Linked, type RestoreState } from '../lib/tf2files';
+import { mountHostedPack } from '../lib/hosted';
 import { setTextureMaxSize } from '../lib/source/paths';
 import type { CharacterType, Settings } from '../lib/types';
 import { DEFAULT_SETTINGS } from '../lib/types';
@@ -11,6 +12,7 @@ export interface Toast { id: number; message: string; tone: 'info' | 'success' |
 
 interface AppState {
   ready: boolean;
+  hosted: boolean;
   assetsVersion: number;
   tf2: RestoreState | 'linked';
   settings: Settings;
@@ -28,6 +30,7 @@ let toastId = 0;
 
 export const useApp = create<AppState>((set, get) => ({
   ready: false,
+  hosted: false,
   assetsVersion: 0,
   tf2: 'none',
   settings: DEFAULT_SETTINGS,
@@ -39,6 +42,7 @@ export const useApp = create<AppState>((set, get) => ({
     setTextureMaxSize(settings.textureQuality);
     set({ settings });
     await mountImports().catch((e) => console.warn('imports', e));
+    set({ hosted: !!(await mountHostedPack()) });
     let tf2: RestoreState | 'linked' = await restoreTf2(false).catch(() => 'error' as const);
     if (import.meta.env.DEV && tf2 !== 'linked' && new URLSearchParams(location.search).has('devtf2')) {
       const { devLinkTf2 } = await import('../lib/tf2files');

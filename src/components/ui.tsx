@@ -4,6 +4,7 @@ import { useApp } from '../state/app';
 import { assets } from '../lib/source/assets';
 import { decodeVtf } from '../lib/source/vtf';
 import { db } from '../lib/db';
+import { hostedIconUrl } from '../lib/hosted';
 
 export function BrandMark({ className = 'brand-mark' }: { className?: string }) {
   // Original mark: a figure silhouette inside a camera frame.
@@ -87,6 +88,8 @@ export function iconUrl(path: string): Promise<string | null> {
   let p = iconMem.get(path);
   if (!p) {
     p = (async () => {
+      const hostedUrl = hostedIconUrl(path);
+      if (hostedUrl && !assets.list().some((pr) => pr.id.startsWith('vpk:'))) return hostedUrl;
       const store = await db();
       let blob = await store.get('icons', path);
       if (!blob) {

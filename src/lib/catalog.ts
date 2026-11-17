@@ -1,6 +1,7 @@
 // Static catalog data (shipped JSON) + user extensions (custom types, model links).
-import type { CatalogItem, CharacterConfig, CharacterType, EquippedCosmetic, Paint, Effect, Tf2Class, Team } from './types';
+import type { CatalogItem, CharacterConfig, CharacterType, EquippedCosmetic, Paint, Effect, PriceSnapshot, Tf2Class, Team } from './types';
 import { kvGet, kvSet, listCustomTypes } from './db';
+import { loadHostedTypes } from './hosted';
 import { assets } from './source/assets';
 import { modelAvailable } from './source/paths';
 
@@ -32,6 +33,19 @@ export const loadPaints = () => getJson<Paint[]>('paints');
 export const loadEffects = () => getJson<Effect[]>('effects');
 export const loadMeta = () => getJson<CatalogMeta>('meta');
 export const loadBuiltinTypes = () => getJson<CharacterType[]>('characters');
+export const loadPrices = () => getJson<PriceSnapshot>('prices').catch(() => null);
+
+const normName = (s: string) => s.toLowerCase().replace(/^the\s+/, '').replace(/[’']/g, "'").trim();
+let priceIndex: Map<string, { p: number; n: number }> | null = null;
+/** Lowest market price (cents) for an item's Unique quality, or null if not on the market snapshot. */
+export async function itemPrice(item: CatalogItem): Promise<{ cents: number; listings: number } | null> {
+  const snap = await loadPrices();
+  if (!snap) return null;
+  priceIndex ??= new Map(Object.entries(snap.items).map(([k, v]) => [normName(k), v]));
+  const hit = priceIndex.get(normName(item.name)) ?? priceIndex.get(normName(item.internal));
+  return hit ? { cents: hit.p, listings: hit.n } : null;
+}
+export const marketUrl = (name: string) => `https://steamcommunity.com/market/listings/440/${encodeURIComponent(name)}`;
 
 let itemIndex: Map<number, CatalogItem> | null = null;
 export async function getItem(id: number) {
@@ -48,8 +62,8 @@ export async function setTypeLink(typeId: string, modelPath: string | null) {
 }
 
 export async function loadAllTypes(): Promise<CharacterType[]> {
-  const [builtin, custom, links] = await Promise.all([loadBuiltinTypes(), listCustomTypes(), getTypeLinks()]);
-  return [...builtin, ...custom].map((t) => (links[t.id] ? { ...t, modelPath: links[t.id], linked: true } as CharacterType : t));
+  const [builtin, hostedTypes, custom, links] = await Promise.all([loadBuiltinTypes(), loadHostedTypes(), listCustomTypes(), getTypeLinks()]);
+  return [...builtin, ...hostedTypes, ...custom].map((t) => (links[t.id] ? { ...t, modelPath: links[t.id], linked: true } as CharacterType : t));
 }
 
 export type Availability = 'ready' | 'needs-tf2' | 'needs-import' | 'demo';
@@ -57,7 +71,7 @@ export function typeAvailability(t: CharacterType): Availability {
   if (t.source.kind === 'builtin-demo') return 'demo';
   if (t.glbBlobId) return 'ready';
   if (t.modelPath && modelAvailable(t.modelPath)) return 'ready';
-  return t.source.kind === 'tf2-vpk' ? 'needs-tf2' : 'needs-import';
+  return t.source.kind === 'tf2-vpk' || t.source.kind === 'hosted' ? 'needs-tf2' : 'needs-import';
 }
 
 // --- Cosmetic model resolution -----------------------------------------------

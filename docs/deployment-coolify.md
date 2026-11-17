@@ -1,8 +1,31 @@
 # Deploying with Docker and Coolify
 
-SFMC Studio builds into static files served by an unprivileged nginx container. It needs **no database, no volumes, no secrets and no environment variables**.
+SFMC Studio builds into static files served by an unprivileged nginx container. It needs **no database, no secrets and no environment variables**. The only optional volume is the read-only TF2 asset pack described below.
 
-## Why there are no volumes
+## Hosted TF2 asset pack (optional, operator's decision)
+
+By default visitors link their own TF2 installation. To make all nine classes and every cosmetic load with **no import at all**, the operator can host an asset pack built from their own TF2 install:
+
+```bash
+node scripts/asset-pack.ts --tf "/path/to/Team Fortress 2/tf" --out ./asset-pack   # ~3.5 GB, ~46,500 files
+# smaller: add --max-texture 512
+```
+
+It contains the 9 class models, every catalog cosmetic model (all classes and styles), their materials and textures, and 128 px PNG icons, plus `index.json`. The app detects `/tf2/index.json` at startup and uses it automatically; a visitor's own linked files still take priority.
+
+- **Never commit it** (`/asset-pack/` is git- and docker-ignored). It is not part of the image.
+- **Legal note:** hosting these files publicly redistributes Valve's copyrighted game assets. Fan sites do this and Valve has tolerated it, but it is the operator's risk and Valve can request removal at any time. Delete the volume to switch back to bring-your-own-files mode.
+- **Docker Compose:** mounted read-only from `./asset-pack` (or `ASSET_PACK=/srv/sfmc/asset-pack`).
+- **Coolify:** in the resource's *Storages*, add a **Directory mount**: source `/srv/sfmc/asset-pack` (on the host), destination `/usr/share/nginx/html/tf2`. Upload the pack once with `rsync -a --delete asset-pack/ server:/srv/sfmc/asset-pack/`. Redeploys keep it.
+- **Extra model entries (also 18+):** put a `types.json` in the pack root with entries like `{ "id": "hosted.my-model", "name": "My Model", "modelPath": "models/custom/my_model.mdl", "category": "custom", "cosmeticClass": "scout", "skeleton": "tf2-biped", "mature": false, "attribution": "Model by …" }` and add the model files under the same paths. Entries with `"mature": true` stay hidden until a visitor confirms they are 18+. Only host community models you have permission to redistribute.
+
+Nginx serves `/tf2/` with a 7-day cache (and `index.json` with `no-cache`), gzip-compressed.
+
+## Price snapshot
+
+`public/catalog/prices.json` holds lowest Steam Community Market listings (Unique quality, USD) for the Try Out page. Refresh it with `node scripts/build-prices.mjs` (throttled, about 6 minutes; keeps old prices if Steam rate-limits). The weekly catalog workflow also runs it.
+
+## Why the server never holds visitor data
 
 Visitor projects are stored in each visitor's browser (IndexedDB), never on the server. Rebuilding, redeploying or deleting the container therefore cannot lose anyone's characters.
 

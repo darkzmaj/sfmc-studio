@@ -32,6 +32,43 @@ export function fromFileList(files: FileList | File[]): ImportCandidate[] {
   return [...files].map((f) => ({ path: (f as File & { webkitRelativePath?: string }).webkitRelativePath || f.name, size: f.size, data: async () => f }));
 }
 
+/** Collect files from a drag-and-drop (folders are walked recursively, keeping relative paths). */
+export async function fromDrop(dt: DataTransfer): Promise<ImportCandidate[]> {
+  const out: ImportCandidate[] = [];
+  const zips: File[] = [];
+  const walk = async (entry: FileSystemEntry, prefix: string): Promise<void> => {
+    if (out.length > LIMITS.files) throw new Error(`Too many files (max ${LIMITS.files}).`);
+    if (entry.isFile) {
+      const file = await new Promise<File>((res, rej) => (entry as FileSystemFileEntry).file(res, rej));
+      if (file.name.toLowerCase().endsWith('.zip')) zips.push(file);
+      else out.push({ path: prefix + file.name, size: file.size, data: async () => file });
+    } else if (entry.isDirectory) {
+      const reader = (entry as FileSystemDirectoryEntry).createReader();
+      for (;;) {
+        const batch = await new Promise<FileSystemEntry[]>((res, rej) => reader.readEntries(res, rej));
+        if (!batch.length) break;
+        for (const e of batch) await walk(e, `${prefix}${entry.name}/`);
+      }
+    }
+  };
+  const entries = [...dt.items].map((i) => i.webkitGetAsEntry?.()).filter((e): e is FileSystemEntry => !!e);
+  if (entries.length) for (const e of entries) await walk(e, '');
+  else {
+    for (const f of [...dt.files]) {
+      if (f.name.toLowerCase().endsWith('.zip')) zips.push(f);
+      else out.push({ path: f.name, size: f.size, data: async () => f });
+    }
+  }
+  for (const z of zips) out.push(...(await fromZip(z)));
+  return out;
+}
+
+/** A readable name from a model path ("models/player/fem_scout.mdl" -> "Fem Scout"). */
+export function nameFromModelPath(path: string) {
+  const base = path.split('/').pop()!.replace(/\.(mdl|glb)$/i, '').replace(/[_-]+/g, ' ').trim();
+  return base.replace(/\w/g, (c) => c.toUpperCase()) || 'Imported model';
+}
+
 /** Expand a ZIP with bomb protection: declared sizes are checked before inflating. */
 export async function fromZip(file: File): Promise<ImportCandidate[]> {
   if (file.size > LIMITS.zipBytes) throw new Error('ZIP is larger than 1 GB.');

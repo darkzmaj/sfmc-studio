@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { AgeGate } from '../components/AgeGate';
 import type { CatalogItem, CharacterType } from '../lib/types';
 import { typeAvailability } from '../lib/catalog';
 import { useApp } from '../state/app';
@@ -13,6 +14,13 @@ const GROUPS: { key: CharacterType['category'][]; label: string }[] = [
   { key: ['demo'], label: 'Test model' },
 ];
 
+/** Types visible to this visitor: mature (18+) entries only after age confirmation. */
+export function useVisibleTypes() {
+  const types = useApp((s) => s.types);
+  const ok = useApp((s) => s.settings.matureConfirmed);
+  return types.filter((t) => !t.mature || ok);
+}
+
 export function availabilityBadge(t: CharacterType) {
   const a = typeAvailability(t);
   if (a === 'ready') return <span className="badge ok">Ready</span>;
@@ -22,12 +30,14 @@ export function availabilityBadge(t: CharacterType) {
 }
 
 export function TypePicker({ value, onPick }: { value?: string; onPick: (t: CharacterType) => void }) {
-  const types = useApp((s) => s.types);
+  const types = useVisibleTypes();
+  const anyMature = useApp((s) => s.types.some((t) => t.mature));
+  const matureOk = useApp((s) => s.settings.matureConfirmed);
   useApp((s) => s.assetsVersion);
   return (
     <div className="stack">
       {GROUPS.map((g) => {
-        const list = types.filter((t) => g.key.includes(t.category));
+        const list = types.filter((t) => g.key.includes(t.category) && !t.mature);
         if (!list.length) return null;
         return (
           <section key={g.label} className="stack" style={{ gap: 8 }}>
@@ -43,6 +53,20 @@ export function TypePicker({ value, onPick }: { value?: string; onPick: (t: Char
           </section>
         );
       })}
+      {anyMature && (
+        <section className="stack" style={{ gap: 8 }}>
+          <div className="panel-title">18+ models</div>
+          {matureOk ? (
+            <div className="type-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))' }}>
+              {types.filter((t) => t.mature).map((t) => (
+                <button key={t.id} className="type-tile" aria-pressed={value === t.id} onClick={() => onPick(t)} title={t.notes}>
+                  <span className="t-name">{t.name}</span>{availabilityBadge(t)}
+                </button>
+              ))}
+            </div>
+          ) : <AgeGate />}
+        </section>
+      )}
     </div>
   );
 }

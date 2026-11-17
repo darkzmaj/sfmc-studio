@@ -1,0 +1,54 @@
+{
+  "voice": "af_heart",
+  "speed": 1.08,
+  "lines": [
+    {
+      "id": "hook",
+      "text": "Want to see your TF2 loadout before you spend a single cent?"
+    },
+    {
+      "id": "intro",
+      "text": "This is SFMC Studio. It's free, and it runs right in your browser."
+    },
+    {
+      "id": "classes",
+      "text": "Pick any of the nine classes. No downloads. No imports."
+    },
+    {
+      "id": "search",
+      "text": "Search every cosmetic in the game, and try it on in real 3D."
+    },
+    {
+      "id": "prices",
+      "text": "Every item shows its Steam Market price, right next to it."
+    },
+    {
+      "id": "paint",
+      "text": "Paint it, flip to BLU, and spin it around. Check every angle."
+    },
+    {
+      "id": "total",
+      "text": "Here's what the whole look costs. Before you buy anything."
+    },
+    {
+      "id": "editor",
+      "text": "Love it? Send it to the editor, give your character a personality, and save it."
+    },
+    {
+      "id": "export",
+      "text": "Then export a render and a full spec for Source Filmmaker. Or back up your entire library."
+    },
+    {
+      "id": "library",
+      "text": "Your whole collection lives in the library. Search it, favorite it, and reopen any character in one click."
+    },
+    {
+      "id": "privacy",
+      "text": "No account. No tracking. Your characters never leave your browser."
+    },
+    {
+      "id": "outro",
+      "text": "SFMC Studio. Free and open source, at sfmc-studio dot kori dot my."
+    }
+  ]
+}

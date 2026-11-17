@@ -20,11 +20,13 @@ jobs:
         with:
           node-version: 22
       - run: node scripts/build-catalog.mjs
+      - run: node scripts/build-prices.mjs
+        continue-on-error: true
       - name: Open pull request if the catalog changed
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          if git diff --quiet -- public/catalog/cosmetics.json public/catalog/paints.json public/catalog/effects.json; then
+          if git diff --quiet -- public/catalog/cosmetics.json public/catalog/paints.json public/catalog/effects.json public/catalog/prices.json; then
             echo "Catalog unchanged."; exit 0
           fi
           branch="catalog-sync/$(date +%Y-%m-%d)"

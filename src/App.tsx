@@ -1,6 +1,6 @@
 import { lazy, Suspense, useEffect, useState } from 'react';
 import { BrowserRouter, NavLink, Route, Routes, useLocation } from 'react-router';
-import { Archive, Boxes, Download, FolderInput, Gauge, Info, Menu, Settings as SettingsIcon, Shirt, SquarePen, Users, BookOpen, Shield } from 'lucide-react';
+import { Archive, Boxes, Download, FolderInput, Gauge, Info, Menu, Settings as SettingsIcon, Shirt, SquarePen, Users, BookOpen, Shield, Tag } from 'lucide-react';
 import { BrandMark, Toasts } from './components/ui';
 import { useApp } from './state/app';
 import { APP, copyrightYear } from './lib/brand';
@@ -8,6 +8,7 @@ import Dashboard from './pages/Dashboard';
 import ErrorBoundary from './components/ErrorBoundary';
 
 const Characters = lazy(() => import('./pages/Characters'));
+const TryOut = lazy(() => import('./pages/TryOut'));
 const Editor = lazy(() => import('./pages/Editor'));
 const Cosmetics = lazy(() => import('./pages/Cosmetics'));
 const Models = lazy(() => import('./pages/Models'));
@@ -19,6 +20,7 @@ const InfoPages = lazy(() => import('./pages/InfoPages'));
 
 const NAV = [
   { to: '/', label: 'Dashboard', icon: Gauge, end: true },
+  { to: '/try', label: 'Try Out', icon: Tag },
   { to: '/characters', label: 'Characters', icon: Users },
   { to: '/editor', label: 'Character Editor', icon: SquarePen },
   { to: '/cosmetics', label: 'Cosmetics', icon: Shirt },
@@ -31,6 +33,7 @@ const NAV = [
 
 function Nav({ open, onNavigate }: { open: boolean; onNavigate: () => void }) {
   const tf2 = useApp((s) => s.tf2);
+  const hosted = useApp((s) => s.hosted);
   return (
     <nav className={`nav ${open ? 'open' : ''}`} aria-label="Main">
       <NavLink to="/" className="brand" onClick={onNavigate}>
@@ -48,8 +51,8 @@ function Nav({ open, onNavigate }: { open: boolean; onNavigate: () => void }) {
       <NavLink to="/about" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} onClick={onNavigate}><Info aria-hidden="true" />About</NavLink>
       <div className="nav-foot">
         <NavLink to="/imports" onClick={onNavigate}>
-          <span className={`status-dot ${tf2 === 'linked' ? 'ok' : tf2 === 'needs-permission' ? 'warn' : ''}`} />
-          {tf2 === 'linked' ? 'TF2 files linked' : tf2 === 'needs-permission' ? 'TF2 folder: reconnect' : 'TF2 files not linked'}
+          <span className={`status-dot ${tf2 === 'linked' || hosted ? 'ok' : tf2 === 'needs-permission' ? 'warn' : ''}`} />
+          {tf2 === 'linked' ? 'TF2 files linked' : hosted ? 'Models ready (hosted)' : tf2 === 'needs-permission' ? 'TF2 folder: reconnect' : 'TF2 files not linked'}
         </NavLink>
         <span>Projects are stored in this browser only.</span>
       </div>
@@ -89,6 +92,7 @@ function Layout() {
         <Suspense fallback={<div className="viewer-state" style={{ position: 'relative', minHeight: 200 }}><div className="spinner" /></div>}>
           <Routes>
             <Route path="/" element={<Dashboard />} />
+            <Route path="/try" element={<TryOut />} />
             <Route path="/characters" element={<Characters />} />
             <Route path="/editor" element={<Editor />} />
             <Route path="/editor/:id" element={<Editor />} />

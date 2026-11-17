@@ -4,6 +4,8 @@ import { writeFileSync } from 'node:fs';
 
 const seconds = Number(process.argv[2] ?? 90);
 const out = process.argv[3] ?? 'music.wav';
+const BEAT = process.argv.includes('--beat');
+const BPM = 112;
 const SR = 48000;
 const N = Math.ceil(seconds * SR);
 const L = new Float32Array(N), R = new Float32Array(N);
@@ -49,6 +51,23 @@ for (let i = 0; i < N; i++) {
     l += s * 0.8; r += s * 1.2;
   }
   L[i] = l; R[i] = r;
+}
+
+// Optional light beat for short-form edits: kick on beats, closed hat on off-beats, root bass pulse.
+if (BEAT) {
+  const beat = 60 / BPM;
+  let seed = 7;
+  const noise = () => ((seed = (seed * 16807) % 2147483647) / 2147483647) * 2 - 1;
+  for (let i = 0; i < N; i++) {
+    const t = i / SR;
+    if (t < 1.5) continue; // let the hook breathe
+    const pb = t % beat, ph = (t + beat / 2) % beat, p8 = t % (beat / 2);
+    const kick = Math.sin(2 * Math.PI * (45 + 70 * Math.exp(-pb * 30)) * pb) * Math.exp(-pb * 9) * 0.55;
+    const hat = noise() * Math.exp(-ph * 90) * 0.06;
+    const root = hz(chords[Math.floor(t / CH) % chords.length][0] - 12);
+    const bass = Math.sin(2 * Math.PI * root * t) * Math.exp(-p8 * 7) * 0.22;
+    L[i] += kick + hat * 0.8 + bass; R[i] += kick + hat * 1.2 + bass;
+  }
 }
 
 // One-pole low-pass, then a small stereo feedback-delay "room".

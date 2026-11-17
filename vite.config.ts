@@ -31,8 +31,26 @@ function devTf2(): Plugin {
   };
 }
 
+// Dev/preview: serve a locally built asset pack (scripts/asset-pack.ts) at /tf2/, like nginx does in production.
+function assetPack(): Plugin {
+  const dir = process.env.ASSET_PACK ?? 'asset-pack';
+  const handler = (req: { url?: string }, res: import('node:http').ServerResponse, next: () => void) => {
+    const rel = decodeURIComponent((req.url ?? '').split('?')[0]).replace(/^\/+/, '');
+    if (rel.includes('..')) { res.statusCode = 400; return res.end(); }
+    const file = join(dir, rel);
+    if (!rel || !existsSync(file) || !statSync(file).isFile()) return next();
+    res.setHeader('Content-Type', rel.endsWith('.json') ? 'application/json' : rel.endsWith('.png') ? 'image/png' : 'application/octet-stream');
+    createReadStream(file).pipe(res);
+  };
+  return {
+    name: 'sfmc-asset-pack',
+    configureServer(server) { server.middlewares.use('/tf2/', handler); },
+    configurePreviewServer(server) { server.middlewares.use('/tf2/', handler); },
+  };
+}
+
 export default defineConfig({
-  plugins: [react(), devTf2()],
+  plugins: [react(), devTf2(), assetPack()],
   build: { target: 'es2022', sourcemap: false, chunkSizeWarningLimit: 700 },
   test: { environment: 'node', include: ['tests/**/*.test.ts'] },
 });

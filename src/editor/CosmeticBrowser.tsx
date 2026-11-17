@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { Search, Check, Paintbrush, Box } from 'lucide-react';
 import type { CatalogItem, Tf2Class } from '../lib/types';
@@ -19,8 +19,9 @@ export function useCosmetics() {
 
 const regionLabel = (r: string) => r.replace(/_/g, ' ');
 
-export default function CosmeticBrowser({ cls, onPick, equipped, selectedId, compact, autoFocus }: {
+export default function CosmeticBrowser({ cls, onPick, equipped, selectedId, compact, autoFocus, extra, lockClass }: {
   cls?: Tf2Class; onPick: (item: CatalogItem) => void; equipped?: Set<number>; selectedId?: number; compact?: boolean; autoFocus?: boolean;
+  /** Extra content at the end of each row (e.g. a price). */ extra?: (item: CatalogItem) => ReactNode; lockClass?: boolean;
 }) {
   const { items, error } = useCosmetics();
   const assetsVersion = useApp((s) => s.assetsVersion);
@@ -68,7 +69,7 @@ export default function CosmeticBrowser({ cls, onPick, equipped, selectedId, com
           <input className="input" type="search" placeholder="Search cosmetics or #defindex" value={q} onChange={(e) => setQ(e.target.value)} aria-label="Search cosmetics" autoFocus={autoFocus} data-hotkey="search" />
         </label>
         <div className={compact ? 'grid-2' : 'row wrap'}>
-          <select className="select" value={classFilter} onChange={(e) => setClassFilter(e.target.value)} aria-label="Class">
+          <select className="select" value={classFilter} onChange={(e) => setClassFilter(e.target.value)} aria-label="Class" hidden={lockClass}>
             <option value="any">All classes</option>
             {TF2_CLASSES.map((c) => <option key={c} value={c}>{c[0].toUpperCase() + c.slice(1)}{c === cls ? ' (current)' : ''}</option>)}
           </select>
@@ -105,6 +106,7 @@ export default function CosmeticBrowser({ cls, onPick, equipped, selectedId, com
                 <div className="row" style={{ gap: 4, color: 'var(--muted)' }}>
                   {it.paintable && <Paintbrush size={13} aria-label="Paintable" />}
                   {has3d && <Box size={13} aria-label="3D model available" style={{ color: 'var(--ok)' }} />}
+                  {extra?.(it)}
                   {isOn && <Check size={15} aria-label="Equipped" style={{ color: 'var(--accent-hi)' }} />}
                 </div>
               </div>

@@ -20,7 +20,7 @@ function Thumb({ id }: { id?: string }) {
 export { Thumb };
 
 export default function Dashboard() {
-  const { settings, updateSettings, tf2, types, ready } = useApp();
+  const { settings, updateSettings, tf2, types, ready, hosted } = useApp();
   const [chars, setChars] = useState<Character[] | null>(null);
   const nav = useNavigate();
   const load = useEditor((s) => s.load);
@@ -40,6 +40,7 @@ export default function Dashboard() {
           <p>Pick a mercenary, dress them in any cosmetics from the full item catalog, write who they are, and export a render plus a machine-readable spec for your Source Filmmaker workflow.</p>
         </div>
         <div className="row">
+          <Link className="btn" to="/try">Try a loadout</Link>
           <Link className="btn" to="/characters">Library</Link>
           <Link className="btn primary" to="/editor"><Plus />New character</Link>
         </div>
@@ -53,7 +54,9 @@ export default function Dashboard() {
         <section className="stack">
           <div className="row"><h2>How it works</h2><span className="spacer" /><button className="btn ghost sm" onClick={() => void updateSettings({ introDismissed: true })}><X />Hide guide</button></div>
           <div className="steps">
-            <div className="step"><span className="n">01</span><h3>Link your game files</h3><p>Point the studio at your own Team Fortress 2 folder. Models load straight from your VPKs; nothing is uploaded.</p><Link to="/imports">Link TF2 folder</Link></div>
+            {hosted
+              ? <div className="step"><span className="n">01</span><h3>Pick a class</h3><p>All nine classes and their cosmetics load right here in 3D. Nothing to install or import.</p><Link to="/try">Try a loadout</Link></div>
+              : <div className="step"><span className="n">01</span><h3>Link your game files</h3><p>Point the studio at your own Team Fortress 2 folder. Models load straight from your VPKs; nothing is uploaded.</p><Link to="/imports">Link TF2 folder</Link></div>}
             <div className="step"><span className="n">02</span><h3>Create and customise</h3><p>Choose a class, switch RED or BLU, then search the catalog and click items to equip, paint and restyle them.</p></div>
             <div className="step"><span className="n">03</span><h3>Describe and save</h3><p>Write personality, voice and animation notes. Saving keeps a version history in this browser.</p></div>
             <div className="step"><span className="n">04</span><h3>Export and back up</h3><p>Export a PNG, a JSON manifest, a Markdown spec or a ZIP bundle. Back up the whole library as one ZIP.</p></div>
@@ -61,7 +64,7 @@ export default function Dashboard() {
         </section>
       )}
 
-      {ready && tf2 !== 'linked' && (
+      {ready && tf2 !== 'linked' && !hosted && (
         <Notice><strong>{tf2 === 'needs-permission' ? 'Reconnect your TF2 folder.' : 'No game files linked yet.'}</strong> TF2 models are not hosted here. {tf2 === 'needs-permission' ? 'Your browser needs your permission again to read the folder you linked before.' : 'Link your own installation to see real 3D models; the test mannequin works without it.'} <Link to="/imports">Go to Imports <ArrowRight size={12} style={{ verticalAlign: -1 }} /></Link></Notice>
       )}
 

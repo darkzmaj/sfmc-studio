@@ -147,3 +147,33 @@ test.describe('with local TF2 files', () => {
     expect(foreign).toEqual([]);
   });
 });
+
+test('try out: pick a class, equip items and see the loadout panel', async ({ page }) => {
+  await page.goto('/try');
+  await page.getByRole('radio', { name: 'Soldier' }).click();
+  await expect(page.getByRole('radio', { name: 'Soldier' })).toHaveAttribute('aria-checked', 'true');
+  await page.getByLabel('Search cosmetics').fill('Stout Shako');
+  await page.getByRole('option', { name: /Stout Shako/ }).first().click();
+  await page.getByLabel('Search cosmetics').fill('Fancy Dress Uniform');
+  await page.getByRole('option', { name: /Fancy Dress Uniform/ }).first().click();
+  await expect(page.locator('.cart-line')).toHaveCount(2);
+  await expect(page.getByText('Estimated total')).toBeVisible();
+  await page.getByLabel('Paint for Stout Shako').selectOption({ index: 1 });
+  // Try Out never touches the editor's saved characters.
+  await page.goto('/characters');
+  await expect(page.getByText('Your library is empty')).toBeVisible();
+});
+
+test('18+ models stay hidden until the visitor confirms their age', async ({ page }) => {
+  await page.goto('/models');
+  await page.getByRole('button', { name: 'Add model type' }).click();
+  await page.getByLabel('Display name').fill('Adult Test Model');
+  await page.getByText('18+ model (hidden until a visitor confirms their age)').click();
+  await page.getByRole('button', { name: 'Save', exact: true }).click();
+  await expect(page.getByText('Adult Test Model')).toHaveCount(0);
+  await page.goto('/editor');
+  await expect(page.getByText('Adult content hidden')).toBeVisible();
+  await page.getByRole('button', { name: 'I am 18 or older' }).click();
+  await page.getByRole('button', { name: 'I am 18+, show them' }).click();
+  await expect(page.getByRole('button', { name: /Adult Test Model/ })).toBeVisible();
+});

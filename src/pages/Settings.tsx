@@ -23,6 +23,7 @@ export default function Settings() {
             <select className="select" value={settings.textureQuality} onChange={(e) => { void updateSettings({ textureQuality: Number(e.target.value) as 512 | 1024 | 2048 }); toast('Applies to models loaded from now on'); }}>
               <option value={2048}>High (up to 2048 px)</option><option value={1024}>Medium (1024 px)</option><option value={512}>Low (512 px, saves memory)</option></select></label>
         </div>
+        <label className="check"><input type="checkbox" checked={settings.matureConfirmed} onChange={(e) => void updateSettings({ matureConfirmed: e.target.checked })} />Show 18+ models (I confirm I am 18 or older)</label>
         <label className="check"><input type="checkbox" checked={!settings.introDismissed} onChange={(e) => void updateSettings({ introDismissed: !e.target.checked })} />Show the getting-started guide on the dashboard</label>
       </section>
       <section className="card card-pad stack" style={{ maxWidth: 720 }}>

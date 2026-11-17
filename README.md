@@ -8,6 +8,9 @@ Official site: **https://sfmc-studio.kori.my** · By [Maj Kovačič](https://dar
 
 ## Features
 
+- **Try Out**: pick one of the 9 classes, try cosmetics on in 3D and see the estimated Steam Community Market price of the whole loadout (plus paints) before you buy, with in-game slot and equip-region warnings.
+- **Hosted models (optional)**: operators can serve a TF2 asset pack built from their own install so visitors need no import (see the deployment doc for the legal note).
+- **18+ models**: entries marked mature stay hidden until the visitor confirms they are 18 or older.
 - **Real 3D models**: parses TF2's VPK archives and Source MDL/VVD/VTX/VTF/VMT files directly in the browser (three.js). Orbit, pan, zoom, front/back/left/right/top presets, perspective or orthographic camera, adjustable FOV, lighting presets, background colour, grid and floor, fullscreen.
 - **All nine classes**, RED and BLU skins (plus über and zombie skin families), bodygroups and procedural poses (reference, A-pose, relaxed, presentation, hands on hips).
 - **Complete cosmetic catalog**: about 9,600 cosmetics from the TF2 item schema with search, class, equip-region, paintable and 3D-availability filters and sorting, rendered in a virtualised list. Item icons are decoded from your own VPKs.

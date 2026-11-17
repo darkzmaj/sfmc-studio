@@ -6,20 +6,22 @@ import type { RigStatus } from '../viewer/rig';
 import { setActiveViewer } from '../viewer/active';
 import { useEditor } from '../state/editor';
 import { useApp } from '../state/app';
+import type { CharacterConfig } from '../lib/types';
 
 export function useRigStatus() {
   const [s, set] = useState<RigStatus>({ base: 'empty', cosmetics: {} });
   return [s, set] as const;
 }
 
-export default function ViewerPane({ onStatus, onViewer }: { onStatus: (s: RigStatus) => void; onViewer?: (v: Viewer | null) => void }) {
+export default function ViewerPane({ onStatus, onViewer, config: configProp }: { onStatus: (s: RigStatus) => void; onViewer?: (v: Viewer | null) => void; config?: CharacterConfig }) {
   const host = useRef<HTMLDivElement>(null);
   const wrap = useRef<HTMLDivElement>(null);
   const viewer = useRef<Viewer | null>(null);
   const [status, setStatus] = useState<RigStatus>({ base: 'empty', cosmetics: {} });
   const [opts, setOpts] = useState({ grid: true, ortho: false });
   const [glError, setGlError] = useState<string | null>(null);
-  const config = useEditor((s) => s.character?.config);
+  const editorConfig = useEditor((s) => s.character?.config);
+  const config = configProp ?? editorConfig;
   const types = useApp((s) => s.types);
   const assetsVersion = useApp((s) => s.assetsVersion);
   const type = types.find((t) => t.id === config?.typeId);
