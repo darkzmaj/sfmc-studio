@@ -91,7 +91,7 @@ export default function Imports() {
     <div className="page stack" style={{ gap: 26 }}>
       {confirmEl}
       <div className="page-head" style={{ marginBottom: 0 }}>
-        <div><div className="eyebrow">Assets</div><h1>Imports</h1><p>Game and Workshop models are never hosted by this site. Link your own TF2 installation, or import model files you are allowed to use. Everything stays in this browser.</p></div>
+        <div><div className="eyebrow">Assets</div><h1>Imports</h1><p>{hosted ? 'This site already hosts the TF2 classes and cosmetics, so you only need this page for community models (Saxton Hale, female variants, Workshop or SFMLab downloads).' : 'Link your own TF2 installation, or import model files you are allowed to use.'} Imported files stay in this browser.</p></div>
       </div>
 
       <section className="card card-pad stack">

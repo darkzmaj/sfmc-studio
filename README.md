@@ -22,6 +22,13 @@ Official site: **https://sfmc-studio.kori.my** · By [Maj Kovačič](https://dar
 - **Community models**: import Saxton Hale, female variants or any Workshop model you may use (folder or ZIP, validated), then link it to a catalog entry. Add your own model types without code.
 - **Undo and redo**, autosaved drafts, keyboard shortcuts, responsive layout.
 
+## Where to get model files
+
+- **TF2 classes and cosmetics**: your own TF2 install (Steam, right-click Team Fortress 2, Manage, Browse local files, `tf` folder), or a hosted asset pack if the deployment provides one.
+- **Community characters** (Saxton Hale, female variants and more): the [Source Filmmaker Steam Workshop](https://steamcommunity.com/app/1840/workshop/) or [SFMLab](https://sfmlab.com). Drag the folder or ZIP onto the Imports page, then press **Create character**.
+- **18+ models**: SFMLab's adult section (account and age verification on SFMLab). Mark the import as 18+; it stays hidden until the visitor confirms their age.
+- Community models belong to their creators: use them within their licences.
+
 ## Privacy architecture
 
 - Every visitor's characters, descriptions, images, imports and settings are stored **only in their own browser** (IndexedDB, per origin). There is no account, no server database, no sharing, no public URL and no analytics.

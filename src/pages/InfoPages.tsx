@@ -67,6 +67,14 @@ function Docs() {
         <li><span className="kbd">1</span> front, <span className="kbd">2</span> back, <span className="kbd">3</span> left, <span className="kbd">4</span> right, <span className="kbd">5</span> top, <span className="kbd">0</span> three-quarter, <span className="kbd">R</span> reset, <span className="kbd">F</span> fullscreen, <span className="kbd">G</span> grid, <span className="kbd">O</span> orthographic.</li>
         <li><span className="kbd">Ctrl</span>+<span className="kbd">Z</span> undo, <span className="kbd">Ctrl</span>+<span className="kbd">Shift</span>+<span className="kbd">Z</span> redo.</li>
       </ul>
+      <h2>Try Out and prices</h2>
+      <p>The <Link to="/try">Try Out</Link> page lets you pick one of the nine classes, try cosmetics on in 3D and see the estimated cost of the loadout. Prices are a snapshot of the lowest Steam Community Market listing for the Unique quality, in USD. They change constantly, so check the market before you buy. TF2 itself allows three cosmetics at once and blocks items that share an equip region; Try Out warns about both.</p>
+      <h2>Where to get model files</h2>
+      <ul>
+        <li><strong>TF2 classes and cosmetics</strong>: your TF2 install. In Steam, right-click Team Fortress 2, then Manage, then Browse local files, and pick the <code>tf</code> folder on the Imports page. Some deployments of this site host them, in which case nothing is needed.</li>
+        <li><strong>Saxton Hale, female variants and other community characters</strong>: the <a href="https://steamcommunity.com/app/1840/workshop/" rel="noopener">Source Filmmaker Steam Workshop</a> (subscribed items land in <code>SourceFilmmaker/game/workshop</code>) or <a href="https://sfmlab.com" rel="noopener">SFMLab</a> (ZIP downloads). Drag the folder or ZIP onto the Imports page and press Create character.</li>
+        <li><strong>18+ models</strong>: SFMLab has an adult section behind its own account and age verification. Tick "This is 18+ content" when importing; such models stay hidden until you confirm your age.</li>
+      </ul>
       <h2>Community models</h2>
       <p>TF2 ships no Saxton Hale or female class player models. Download a model you are allowed to use, import its folder or ZIP, then link the <code>.mdl</code> to the matching catalog entry. Official cosmetics only fit models that keep the TF2 skeleton's bone names.</p>
       <h2>More</h2>
