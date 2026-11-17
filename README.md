@@ -63,7 +63,7 @@ The image is a static nginx (non-root, read-only capable, about 80 MB) with secu
 
 ## Documentation
 
-- [Interchange format](docs/interchange-format.md): manifest fields and the planned SFM MCP integration.
+- [Interchange format](docs/interchange-format.md): manifest fields. [Using a character in SFM-MCP](docs/sfm-mcp-import.md): local import workflow and safety rules.
 - [Asset pipeline](docs/asset-pipeline.md): Source parsing, bonemerge, GLB conversion, known approximations.
 - [Backups](docs/backups.md): backup format and restore rules.
 - [Deployment](docs/deployment-coolify.md): Docker and Coolify.
@@ -78,7 +78,7 @@ Latest Chrome, Edge, Firefox and Safari with WebGL 2. Remembering the TF2 folder
 - TF2 does not ship Saxton Hale or female class player models. These entries need a community model you import yourself.
 - Unusual particle effects, eye shaders, facial flexes and TF2's exact toon lighting are approximated or not rendered (see the asset pipeline doc).
 - Poses are procedural presets, not TF2 animation sequences.
-- No live SFM MCP connection yet: the MCP is unpublished and its SFM adapter is unimplemented. Manifests are designed for it.
+- No live connection to SFM: Studio exports a manifest file; the SFM-MCP importer (separate project, runs locally) consumes it.
 
 ## Licence
 
