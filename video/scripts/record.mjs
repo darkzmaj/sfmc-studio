@@ -15,7 +15,7 @@ mkdirSync(join(out, 'frames'), { recursive: true });
 
 const viewport = portrait ? { width: 432, height: 768 } : { width: 1920, height: 1080 };
 const scale = portrait ? 2.5 : 1; // portrait frames come out at 1080x1920
-const browser = await chromium.launch({ headless: true, args: ['--use-angle=d3d11', '--enable-gpu', '--ignore-gpu-blocklist', '--force-color-profile=srgb'] });
+const browser = await chromium.launch({ headless: true, args: ['--use-angle=d3d11', '--enable-gpu', '--ignore-gpu-blocklist', '--force-color-profile=srgb', ...(portrait ? ['--force-device-scale-factor=2.5'] : [])] });
 const ctx = await browser.newContext({ viewport, deviceScaleFactor: scale, acceptDownloads: true, hasTouch: false, isMobile: false });
 
 // Visible cursor + click ripple (the real pointer is invisible in headless captures).

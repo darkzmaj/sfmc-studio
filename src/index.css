@@ -326,3 +326,9 @@ dialog.modal::backdrop { background: rgba(8, 7, 6, 0.65); backdrop-filter: blur(
 .pane, .stack, .equip-body, .field, .grid-2 { grid-template-columns: minmax(0, 1fr); }
 .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 @media (max-width: 560px) { .grid-2 { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 960px) {
+  .editor-left .pane-flush { flex: none; height: 64vh; min-height: 380px; }
+}
+@media (max-width: 960px) {
+  .editor, .editor > * { flex: none; }
+}
