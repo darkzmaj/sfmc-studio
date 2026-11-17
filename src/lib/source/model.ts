@@ -155,29 +155,35 @@ export function setBodygroups(model: SourceModel, selection: Record<string, numb
 }
 
 /**
- * Bonemerge: rebind a cosmetic's meshes to the character skeleton by bone name.
- * Unmatched bones fall back to the nearest matched ancestor. Returns unmatched bone names.
+ * Bonemerge: drive a cosmetic with the character's bones (matched by name), the way Source's
+ * bonemerge does. Each cosmetic bone i is rendered with targetBone.matrixWorld * cosmeticInverseBind[i],
+ * so items compiled with their own reference pose (common for older hats, whose head bone sits near
+ * the origin) still land on the matching bone. Unmatched bones follow their nearest matched ancestor.
+ * Returns the names of cosmetic bones that had no match on the target.
  */
 export function bonemerge(cosmetic: SourceModel, target: SourceModel): string[] {
-  const byName = new Map(target.boneNames.map((n, i) => [n.toLowerCase(), i]));
+  const byName = new Map(target.bones.map((b) => [b.name.toLowerCase(), b]));
   const unmatched: string[] = [];
-  const map = cosmetic.bones.map((b) => {
-    let cur: any = b;
-    while (cur && cur.isBone) {
-      const hit = byName.get(cur.name.toLowerCase());
-      if (hit !== undefined) return hit;
-      cur = cur.parent;
+  const bones: Bone[] = [];
+  const inverses = cosmetic.skeleton.boneInverses.map((m) => m.clone());
+  cosmetic.bones.forEach((b, i) => {
+    if (!byName.has(b.name.toLowerCase())) unmatched.push(b.name);
+    let cur: Bone | null = b;
+    let hit: Bone | undefined;
+    while (cur && (cur as Bone).isBone) {
+      hit = byName.get(cur.name.toLowerCase());
+      if (hit) break;
+      cur = cur.parent as Bone | null;
     }
-    return 0;
+    if (hit && cur !== b && cur) {
+      // Follow the matched ancestor using that ancestor's inverse bind.
+      const ai = cosmetic.bones.indexOf(cur);
+      if (ai >= 0) inverses[i] = cosmetic.skeleton.boneInverses[ai].clone();
+    }
+    bones.push(hit ?? target.bones[0]);
   });
-  cosmetic.bones.forEach((b) => { if (!byName.has(b.name.toLowerCase())) unmatched.push(b.name); });
-  for (const { mesh } of cosmetic.meshes) {
-    const src = mesh.geometry.getAttribute('skinIndex');
-    const arr = new Uint16Array(src.count * 4);
-    for (let v = 0; v < src.count; v++) for (let c = 0; c < 4; c++) arr[v * 4 + c] = map[src.getComponent(v, c)] ?? 0;
-    mesh.geometry.setAttribute('skinIndex', new BufferAttribute(arr, 4));
-    mesh.bind(target.skeleton, mesh.bindMatrix);
-  }
+  const skeleton = new Skeleton(bones, inverses);
+  for (const { mesh } of cosmetic.meshes) mesh.bind(skeleton, mesh.bindMatrix);
   return unmatched;
 }
 

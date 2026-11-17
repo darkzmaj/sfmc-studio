@@ -322,3 +322,7 @@ dialog.modal::backdrop { background: rgba(8, 7, 6, 0.65); backdrop-filter: blur(
   .editor-bottom .seg { order: 5; width: 100%; justify-content: space-between; }
   .editor-bottom .seg button { flex: 1; }
 }
+/* Grid columns may never grow past their container (long paths, number inputs). */
+.pane, .stack, .equip-body, .field, .grid-2 { grid-template-columns: minmax(0, 1fr); }
+.grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (max-width: 560px) { .grid-2 { grid-template-columns: minmax(0, 1fr); } }
