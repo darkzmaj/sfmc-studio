@@ -44,3 +44,5 @@ dist-ssr
 /video/work/
 /video/out/
 /asset-pack/
+/video/tts/out/
+/video/tts/probe*
