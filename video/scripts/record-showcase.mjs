@@ -11,7 +11,7 @@ const out = join('video', 'raw', 'showcase');
 rmSync(out, { recursive: true, force: true });
 mkdirSync(join(out, 'frames'), { recursive: true });
 const viewport = { width: 1920, height: 1080 };
-const ITEMS = JSON.parse(process.env.ITEMS ?? '["Stout Shako","Lord Cockswain\'s Novelty Mutton Chops and Pipe","Fancy Dress Uniform"]');
+const ITEMS = JSON.parse(process.env.ITEMS ?? '["Breach and Bomb","Lone Survivor","General\'s Greatcoat"]');
 const PAINT = process.env.PAINT ?? 'Australium Gold';
 
 const browser = await chromium.launch({ headless: true, args: ['--use-angle=d3d11', '--enable-gpu', '--ignore-gpu-blocklist', '--force-color-profile=srgb', `--force-device-scale-factor=${DSF}`] });
@@ -79,7 +79,7 @@ seg('intro');
 await focus('main h1');
 await moveTo('h1', { fx: 0.4 });
 await wait(900);
-await click(page.getByRole('link', { name: 'Try a loadout' }), 600);
+await click(page.getByRole('link', { name: 'Try a loadout' }).first(), 600);
 await viewer().waitFor();
 await focus('.tryout-view');
 await wait(1200);

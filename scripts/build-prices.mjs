@@ -34,7 +34,7 @@ function save() {
 const base = 'https://steamcommunity.com/market/search/render/?query=&search_descriptions=0&sort_column=name&sort_dir=asc&appid=440&norender=1&category_440_Quality%5B%5D=tag_Unique&category_440_Type%5B%5D=tag_misc';
 let start = 0, total = Infinity, fetched = 0;
 try {
-  while (start < total) {
+  while (!process.argv.includes('--paints-only') && start < total) {
     const j = await get(`${base}&start=${start}&count=100`);
     total = j.total_count;
     if (!j.results?.length) break;
@@ -50,9 +50,10 @@ console.log();
 
 for (const p of JSON.parse(readFileSync('public/catalog/paints.json', 'utf8'))) {
   try {
-    const j = await get(`https://steamcommunity.com/market/priceoverview/?appid=440&currency=1&market_hash_name=${encodeURIComponent(p.name)}`);
-    const text = j.lowest_price ?? j.median_price;
-    if (text) paints[p.id] = { p: Math.round(Number(text.replace(/[^0-9.]/g, '')) * 100), name: p.name };
+    // search/render is far less throttled than priceoverview; match the exact paint can name.
+    const j = await get(`https://steamcommunity.com/market/search/render/?query=${encodeURIComponent(p.name)}&appid=440&norender=1&count=10`);
+    const hit = (j.results ?? []).find((r) => r.hash_name === p.name);
+    if (hit) paints[p.id] = { p: hit.sell_price, name: p.name };
     save();
   } catch (e) { console.warn(`${p.name}: ${e.message}`); }
   await sleep(3500);
