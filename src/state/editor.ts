@@ -2,7 +2,7 @@
 // switches; a debounced draft is written to IndexedDB so they also survive reloads.
 import { create } from 'zustand';
 import type { Character, CharacterConfig, CharacterProfile, EquippedCosmetic } from '../lib/types';
-import { kvGet, kvSet, now, saveCharacter, uid } from '../lib/db';
+import { getCharacter, kvGet, kvSet, now, saveCharacter, uid } from '../lib/db';
 
 export interface Snapshot { profile: CharacterProfile; config: CharacterConfig }
 
@@ -52,6 +52,7 @@ export const useEditor = create<EditorState>((set, get) => ({
   character: null, past: [], future: [], dirty: false, savedAt: null, lastKey: null,
 
   load(c, opts) {
+    void kvSet('lastOpen', c.id);
     set({ character: structuredClone(c), past: [], future: [], dirty: !!opts?.dirty, savedAt: c.version ? c.updatedAt : null, lastKey: null });
   },
   close() { set({ character: null, past: [], future: [], dirty: false, lastKey: null }); void kvSet('draft', null); },
@@ -111,6 +112,16 @@ export async function restoreDraft(): Promise<boolean> {
   if (!d?.character) return false;
   useEditor.getState().load(d.character, { dirty: true });
   return true;
+}
+
+/** Reopen the last character after a reload (draft first, then the last saved one). */
+export async function ensureOpenCharacter(): Promise<boolean> {
+  if (useEditor.getState().character) return true;
+  if (await restoreDraft()) return true;
+  const id = await kvGet<string>('lastOpen');
+  const c = id ? await getCharacter(id) : undefined;
+  if (c) useEditor.getState().load(c);
+  return !!c;
 }
 
 export function makeCosmetic(partial: Partial<EquippedCosmetic> & { name: string }): EquippedCosmetic {

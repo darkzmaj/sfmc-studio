@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
 import { Image as ImageIcon, FileJson, FileText, Package, Box, FileCode } from 'lucide-react';
-import { useEditor } from '../state/editor';
+import { ensureOpenCharacter, useEditor } from '../state/editor';
 import { useApp } from '../state/app';
 import ViewerPane from '../editor/ViewerPane';
 import { activeViewer } from '../viewer/active';
@@ -27,6 +27,9 @@ export default function Exports() {
   const [includeOwned, setIncludeOwned] = useState(true);
   const [busy, setBusy] = useState<string | null>(null);
   const [status, setStatus] = useState<RigStatus>({ base: 'empty', cosmetics: {} });
+  const [checked, setChecked] = useState(false);
+  useEffect(() => { void ensureOpenCharacter().finally(() => setChecked(true)); }, []);
+  if (!character && !checked) return null;
 
   if (!character) {
     return (

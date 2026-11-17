@@ -5,7 +5,7 @@ import type { CatalogItem, Tf2Class } from '../lib/types';
 import { TF2_CLASSES } from '../lib/types';
 import { cosmeticModelPath, loadMeta, type CatalogMeta } from '../lib/catalog';
 import { modelAvailable } from '../lib/source/paths';
-import { useEditor, makeCosmetic } from '../state/editor';
+import { useEditor, makeCosmetic, ensureOpenCharacter } from '../state/editor';
 import { useApp } from '../state/app';
 import CosmeticBrowser from '../editor/CosmeticBrowser';
 import { ItemIcon, Notice } from '../components/ui';
@@ -69,7 +69,7 @@ export default function Cosmetics() {
   const types = useApp((s) => s.types);
   const tf2 = useApp((s) => s.tf2);
   const type = character ? types.find((t) => t.id === character.config.typeId) : undefined;
-  useEffect(() => { void loadMeta().then(setMeta); }, []);
+  useEffect(() => { void loadMeta().then(setMeta); void ensureOpenCharacter(); }, []);
   const equipped = new Set((character?.config.cosmetics ?? []).map((c) => c.defindex).filter((x): x is number => x !== undefined));
   return (
     <div className="page">

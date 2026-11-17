@@ -1,0 +1,37 @@
+name: Catalog sync
+
+# Regenerates public/catalog from the latest TF2 item schema and opens a pull request when it changed.
+# Saved characters reference items by defindex, so catalog updates never touch user presets.
+on:
+  schedule:
+    - cron: '17 4 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node scripts/build-catalog.mjs
+      - name: Open pull request if the catalog changed
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if git diff --quiet -- public/catalog/cosmetics.json public/catalog/paints.json public/catalog/effects.json; then
+            echo "Catalog unchanged."; exit 0
+          fi
+          branch="catalog-sync/$(date +%Y-%m-%d)"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$branch"
+          git add public/catalog
+          git commit -m "Update TF2 item catalog"
+          git push -u origin "$branch"
+          gh pr create --title "Update TF2 item catalog" --body "Automated weekly sync from tsuza/tf2-item-schema. English names for new items fall back to internal names when no localisation is available." --base main --head "$branch"

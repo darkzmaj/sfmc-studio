@@ -38,3 +38,6 @@ dist-ssr
 /video/raw/
 /video/out/*.tmp.*
 .env
+
+# Local tooling
+.claude/

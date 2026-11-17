@@ -1,0 +1,21 @@
+# Local or Coolify (Docker Compose build pack) deployment.
+# No volumes: the server holds no data. Visitor projects live in their browsers.
+services:
+  sfmc-studio:
+    build: .
+    image: sfmc-studio:latest
+    restart: unless-stopped
+    ports:
+      - "${PORT:-8080}:8080"
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /var/cache/nginx
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: [ALL]
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/healthz"]
+      interval: 30s
+      timeout: 3s
+      retries: 3

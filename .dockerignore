@@ -1,0 +1,11 @@
+node_modules
+dist
+.git
+.claude
+test-results
+playwright-report
+video
+*.vpk
+*.mdl
+*.vtf
+.env

@@ -1,0 +1,121 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sfmc-studio.kori.my/schema/sfmc-character-manifest.v1.schema.json",
+  "title": "SFMC Studio character manifest v1",
+  "description": "Interchange format exported by SFM Character Studio. Designed to be consumed by an SFM MCP server or scripts to load a character preset, resolve model dependencies, spawn the model, apply skins/bodygroups, attach cosmetics and read personality and animation notes.",
+  "type": "object",
+  "required": ["format", "formatVersion", "generator", "exportedAt", "character", "model", "cosmetics", "assets", "dependencies"],
+  "properties": {
+    "format": { "const": "sfmc.character.manifest" },
+    "formatVersion": { "const": 1 },
+    "generator": {
+      "type": "object",
+      "required": ["name", "version"],
+      "properties": { "name": { "type": "string" }, "version": { "type": "string" }, "url": { "type": "string" } }
+    },
+    "exportedAt": { "type": "string", "format": "date-time" },
+    "character": {
+      "type": "object",
+      "required": ["id", "version", "profile"],
+      "properties": {
+        "id": { "type": "string", "description": "Stable UUID of the character in the user's library." },
+        "version": { "type": "integer", "minimum": 0 },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" },
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "profile": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string" },
+            "nickname": { "type": "string" },
+            "description": { "type": "string" },
+            "personality": { "type": "string" },
+            "voice": { "type": "string" },
+            "outfit": { "type": "string" },
+            "animationNotes": { "type": "string" },
+            "special": { "type": "string" },
+            "story": { "type": "string" },
+            "tags": { "type": "array", "items": { "type": "string" } },
+            "referenceImageIds": { "type": "array", "items": { "type": "string" } }
+          }
+        }
+      }
+    },
+    "model": {
+      "type": "object",
+      "required": ["typeId", "team", "skin", "bodygroups", "pose"],
+      "properties": {
+        "typeId": { "type": "string", "examples": ["tf2.scout", "community.saxton-hale", "custom.1a2b3c4d"] },
+        "name": { "type": "string" },
+        "category": { "type": "string" },
+        "cosmeticClass": { "type": "string", "enum": ["scout", "soldier", "pyro", "demoman", "heavy", "engineer", "medic", "sniper", "spy"] },
+        "skeleton": { "type": "string", "enum": ["tf2-biped", "custom", "unknown"] },
+        "source": { "type": "object", "properties": { "kind": { "type": "string" }, "label": { "type": "string" }, "url": { "type": "string" } } },
+        "modelPath": { "type": "string", "description": "Game-relative MDL path, e.g. models/player/scout.mdl." },
+        "team": { "type": "string", "enum": ["red", "blu"] },
+        "skin": { "type": "integer", "minimum": 0, "description": "Skin family to apply to the base model." },
+        "bodygroups": { "type": "object", "additionalProperties": { "type": "integer" }, "description": "Explicit bodygroup overrides (name -> index). Cosmetic-driven hiding is listed per cosmetic via the item schema." },
+        "pose": { "type": "object", "properties": { "id": { "type": "string" }, "name": { "type": "string" }, "procedural": { "type": "boolean" } } }
+      }
+    },
+    "cosmetics": {
+      "type": "array",
+      "description": "Equipped items in user order. No three-item limit.",
+      "items": {
+        "type": "object",
+        "required": ["uid", "name", "transform", "visible"],
+        "properties": {
+          "uid": { "type": "string" },
+          "name": { "type": "string" },
+          "defindex": { "type": "integer", "description": "TF2 item definition index (absent for custom attachments)." },
+          "equipRegions": { "type": "array", "items": { "type": "string" } },
+          "modelPath": { "type": "string", "description": "Resolved per-class model path for this style." },
+          "style": { "type": "object", "properties": { "id": { "type": "integer" }, "name": { "type": "string" } } },
+          "paint": {
+            "oneOf": [
+              { "type": "null" },
+              { "type": "object", "required": ["defindex", "name", "rgb"], "properties": { "defindex": { "type": "integer" }, "name": { "type": "string" }, "rgb": { "type": "array", "items": { "type": "integer", "minimum": 0, "maximum": 255 }, "minItems": 3, "maxItems": 3 } } }
+            ]
+          },
+          "customColor": { "oneOf": [{ "type": "null" }, { "type": "array", "items": { "type": "integer" }, "minItems": 3, "maxItems": 3 }] },
+          "transform": {
+            "type": "object",
+            "properties": {
+              "offset": { "type": "array", "items": { "type": "number" }, "minItems": 3, "maxItems": 3, "description": "Source units, model space (+X forward, +Y left, +Z up)." },
+              "rotationDeg": { "type": "array", "items": { "type": "number" }, "minItems": 3, "maxItems": 3 },
+              "scale": { "type": "number" }
+            }
+          },
+          "visible": { "type": "boolean" },
+          "modelAvailable": { "type": "boolean", "description": "Whether the model existed in the exporting user's linked files." }
+        }
+      }
+    },
+    "assets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["role", "path", "files", "availableLocally", "origin"],
+        "properties": {
+          "role": { "enum": ["base-model", "cosmetic-model"] },
+          "path": { "type": "string" },
+          "files": { "type": "array", "items": { "type": "string" } },
+          "availableLocally": { "type": "boolean", "description": "True only if verified in linked/imported files at export time." },
+          "origin": { "enum": ["tf2-vpk", "user-import", "missing"] },
+          "vpkCrc32": { "type": "string", "pattern": "^[0-9a-f]{8}$" },
+          "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+          "importPack": { "type": "string" }
+        }
+      }
+    },
+    "dependencies": {
+      "type": "object",
+      "properties": {
+        "requiresTf2": { "type": "boolean" },
+        "workshop": { "type": "array", "items": { "type": "object", "properties": { "typeId": { "type": "string" }, "url": { "type": "string" }, "note": { "type": "string" } } } }
+      }
+    },
+    "catalog": { "type": "object", "properties": { "generatedAt": { "type": "string" }, "source": { "type": "string" } } },
+    "notes": { "type": "array", "items": { "type": "string" } }
+  }
+}

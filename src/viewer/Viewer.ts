@@ -21,6 +21,15 @@ const LIGHTS: Record<LightingPreset, { env: number; hemi: number; ambient: numbe
   flat: { env: 0.0, hemi: 0.0, ambient: 2.6, key: 0, fill: 0, rim: 0 },
 };
 
+/** Camera distance that fits a box's height and horizontal extent into the view, with a margin. */
+function fitDistance(box: Box3, fovDeg: number, aspect: number, margin: number) {
+  const size = box.getSize(new Vector3());
+  const tanV = Math.tan((fovDeg * Math.PI) / 360);
+  const tanH = tanV * aspect;
+  const horiz = Math.max(size.x, size.z);
+  return Math.max(size.y / 2 / tanV, horiz / 2 / tanH) * margin + horiz / 2;
+}
+
 export class Viewer {
   readonly renderer: WebGLRenderer;
   readonly scene = new Scene();
@@ -168,10 +177,7 @@ export class Viewer {
     const center = this.framed.getCenter(new Vector3());
     const dir = this.persp.position.clone().sub(this.controls.target).normalize();
     if (!Number.isFinite(dir.x) || dir.lengthSq() === 0) dir.set(0.6, 0.15, 0.8).normalize();
-    const radius = Math.max(0.5 * size.length(), 1) * 0.92;
-    const vHalf = (this.persp.fov * Math.PI) / 360;
-    const hHalf = Math.atan(Math.tan(vHalf) * this.persp.aspect);
-    const dist = radius / Math.sin(Math.min(vHalf, hHalf));
+    const dist = fitDistance(this.framed, this.persp.fov, this.persp.aspect, 1.15);
     this.controls.target.copy(center);
     this.persp.position.copy(center).addScaledVector(dir, dist);
     this.ortho.position.copy(this.persp.position);
@@ -233,11 +239,8 @@ export class Viewer {
         const b = this.rig.bounds();
         if (!b.isEmpty()) {
           const center = b.getCenter(new Vector3());
-          const radius = 0.5 * b.getSize(new Vector3()).length() * 0.8;
-          const vHalf = (pc.fov * Math.PI) / 360;
-          const hHalf = Math.atan(Math.tan(vHalf) * pc.aspect);
           const dir = pc.position.clone().sub(this.controls.target).normalize();
-          pc.position.copy(center).addScaledVector(dir, radius / Math.sin(Math.min(vHalf, hHalf)));
+          pc.position.copy(center).addScaledVector(dir, fitDistance(b, pc.fov, pc.aspect, 1.08));
           pc.lookAt(center);
         }
       }

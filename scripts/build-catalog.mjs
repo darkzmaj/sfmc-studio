@@ -88,7 +88,15 @@ async function main() {
   const G = ig.items_game;
   const hasLocal = loadLocalisation();
   const schemaNames = new Map(en.result.items.map((i) => [String(i.defindex), i.item_name]));
-  const nameOf = (id, it) => loc(it.item_name, null) ?? schemaNames.get(id) ?? it.name;
+  // Without a local tf_english.txt (e.g. in CI), keep names from the previously shipped catalog so a
+  // sync only adds/updates metadata and never degrades display names. User presets store defindexes,
+  // so catalog updates can never overwrite saved characters.
+  const previous = new Map();
+  for (const f of ['cosmetics.json', 'paints.json']) {
+    const file = join(OUT, f);
+    if (existsSync(file)) for (const i of JSON.parse(readFileSync(file, 'utf8'))) previous.set(String(i.id), i.name);
+  }
+  const nameOf = (id, it) => loc(it.item_name, null) ?? schemaNames.get(id) ?? previous.get(id) ?? it.name;
 
   const cosmetics = [];
   for (const [id, raw] of Object.entries(G.items)) {

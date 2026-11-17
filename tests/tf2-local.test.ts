@@ -5,8 +5,8 @@ import { VpkArchive, type ByteSource } from '../src/lib/source/vpk';
 import { assets, VpkProvider } from '../src/lib/source/assets';
 import { loadSourceModel, bonemerge } from '../src/lib/source/model';
 
-const TF = process.env.TF2_DIR ?? 'D:/SteamLibrary/steamapps/common/Team Fortress 2/tf';
-const has = existsSync(`${TF}/tf2_misc_dir.vpk`);
+const TF = process.env.TF2_DIR ?? '';
+const has = !!TF && existsSync(`${TF}/tf2_misc_dir.vpk`);
 
 function fileSource(path: string): ByteSource {
   const fd = openSync(path, 'r');
