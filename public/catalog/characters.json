@@ -1,0 +1,540 @@
+[
+ {
+  "id": "tf2.scout",
+  "name": "Scout",
+  "category": "tf2-class",
+  "tags": [
+   "tf2",
+   "class",
+   "scout",
+   "mercenary"
+  ],
+  "cosmeticClass": "scout",
+  "source": {
+   "kind": "tf2-vpk",
+   "label": "Team Fortress 2 (base game VPK)"
+  },
+  "modelPath": "models/player/scout.mdl",
+  "teams": [
+   "red",
+   "blu"
+  ],
+  "teamSkins": {
+   "red": 0,
+   "blu": 1
+  },
+  "skeleton": "tf2-biped",
+  "attribution": "Valve Corporation. Team Fortress 2 assets are not redistributed by SFMC Studio.",
+  "notes": "Base TF2 player model. Loaded from your own TF2 installation (tf2_misc_dir.vpk); never hosted by this site.",
+  "builtin": true
+ },
+ {
+  "id": "tf2.soldier",
+  "name": "Soldier",
+  "category": "tf2-class",
+  "tags": [
+   "tf2",
+   "class",
+   "soldier",
+   "mercenary"
+  ],
+  "cosmeticClass": "soldier",
+  "source": {
+   "kind": "tf2-vpk",
+   "label": "Team Fortress 2 (base game VPK)"
+  },
+  "modelPath": "models/player/soldier.mdl",
+  "teams": [
+   "red",
+   "blu"
+  ],
+  "teamSkins": {
+   "red": 0,
+   "blu": 1
+  },
+  "skeleton": "tf2-biped",
+  "attribution": "Valve Corporation. Team Fortress 2 assets are not redistributed by SFMC Studio.",
+  "notes": "Base TF2 player model. Loaded from your own TF2 installation (tf2_misc_dir.vpk); never hosted by this site.",
+  "builtin": true
+ },
+ {
+  "id": "tf2.pyro",
+  "name": "Pyro",
+  "category": "tf2-class",
+  "tags": [
+   "tf2",
+   "class",
+   "pyro",
+   "mercenary"
+  ],
+  "cosmeticClass": "pyro",
+  "source": {
+   "kind": "tf2-vpk",
+   "label": "Team Fortress 2 (base game VPK)"
+  },
+  "modelPath": "models/player/pyro.mdl",
+  "teams": [
+   "red",
+   "blu"
+  ],
+  "teamSkins": {
+   "red": 0,
+   "blu": 1
+  },
+  "skeleton": "tf2-biped",
+  "attribution": "Valve Corporation. Team Fortress 2 assets are not redistributed by SFMC Studio.",
+  "notes": "Base TF2 player model. Loaded from your own TF2 installation (tf2_misc_dir.vpk); never hosted by this site.",
+  "builtin": true
+ },
+ {
+  "id": "tf2.demoman",
+  "name": "Demoman",
+  "category": "tf2-class",
+  "tags": [
+   "tf2",
+   "class",
+   "demoman",
+   "mercenary"
+  ],
+  "cosmeticClass": "demoman",
+  "source": {
+   "kind": "tf2-vpk",
+   "label": "Team Fortress 2 (base game VPK)"
+  },
+  "modelPath": "models/player/demo.mdl",
+  "teams": [
+   "red",
+   "blu"
+  ],
+  "teamSkins": {
+   "red": 0,
+   "blu": 1
+  },
+  "skeleton": "tf2-biped",
+  "attribution": "Valve Corporation. Team Fortress 2 assets are not redistributed by SFMC Studio.",
+  "notes": "Base TF2 player model. Loaded from your own TF2 installation (tf2_misc_dir.vpk); never hosted by this site.",
+  "builtin": true
+ },
+ {
+  "id": "tf2.heavy",
+  "name": "Heavy",
+  "category": "tf2-class",
+  "tags": [
+   "tf2",
+   "class",
+   "heavy",
+   "mercenary"
+  ],
+  "cosmeticClass": "heavy",
+  "source": {
+   "kind": "tf2-vpk",
+   "label": "Team Fortress 2 (base game VPK)"
+  },
+  "modelPath": "models/player/heavy.mdl",
+  "teams": [
+   "red",
+   "blu"
+  ],
+  "teamSkins": {
+   "red": 0,
+   "blu": 1
+  },
+  "skeleton": "tf2-biped",
+  "attribution": "Valve Corporation. Team Fortress 2 assets are not redistributed by SFMC Studio.",
+  "notes": "Base TF2 player model. Loaded from your own TF2 installation (tf2_misc_dir.vpk); never hosted by this site.",
+  "builtin": true
+ },
+ {
+  "id": "tf2.engineer",
+  "name": "Engineer",
+  "category": "tf2-class",
+  "tags": [
+   "tf2",
+   "class",
+   "engineer",
+   "mercenary"
+  ],
+  "cosmeticClass": "engineer",
+  "source": {
+   "kind": "tf2-vpk",
+   "label": "Team Fortress 2 (base game VPK)"
+  },
+  "modelPath": "models/player/engineer.mdl",
+  "teams": [
+   "red",
+   "blu"
+  ],
+  "teamSkins": {
+   "red": 0,
+   "blu": 1
+  },
+  "skeleton": "tf2-biped",
+  "attribution": "Valve Corporation. Team Fortress 2 assets are not redistributed by SFMC Studio.",
+  "notes": "Base TF2 player model. Loaded from your own TF2 installation (tf2_misc_dir.vpk); never hosted by this site.",
+  "builtin": true
+ },
+ {
+  "id": "tf2.medic",
+  "name": "Medic",
+  "category": "tf2-class",
+  "tags": [
+   "tf2",
+   "class",
+   "medic",
+   "mercenary"
+  ],
+  "cosmeticClass": "medic",
+  "source": {
+   "kind": "tf2-vpk",
+   "label": "Team Fortress 2 (base game VPK)"
+  },
+  "modelPath": "models/player/medic.mdl",
+  "teams": [
+   "red",
+   "blu"
+  ],
+  "teamSkins": {
+   "red": 0,
+   "blu": 1
+  },
+  "skeleton": "tf2-biped",
+  "attribution": "Valve Corporation. Team Fortress 2 assets are not redistributed by SFMC Studio.",
+  "notes": "Base TF2 player model. Loaded from your own TF2 installation (tf2_misc_dir.vpk); never hosted by this site.",
+  "builtin": true
+ },
+ {
+  "id": "tf2.sniper",
+  "name": "Sniper",
+  "category": "tf2-class",
+  "tags": [
+   "tf2",
+   "class",
+   "sniper",
+   "mercenary"
+  ],
+  "cosmeticClass": "sniper",
+  "source": {
+   "kind": "tf2-vpk",
+   "label": "Team Fortress 2 (base game VPK)"
+  },
+  "modelPath": "models/player/sniper.mdl",
+  "teams": [
+   "red",
+   "blu"
+  ],
+  "teamSkins": {
+   "red": 0,
+   "blu": 1
+  },
+  "skeleton": "tf2-biped",
+  "attribution": "Valve Corporation. Team Fortress 2 assets are not redistributed by SFMC Studio.",
+  "notes": "Base TF2 player model. Loaded from your own TF2 installation (tf2_misc_dir.vpk); never hosted by this site.",
+  "builtin": true
+ },
+ {
+  "id": "tf2.spy",
+  "name": "Spy",
+  "category": "tf2-class",
+  "tags": [
+   "tf2",
+   "class",
+   "spy",
+   "mercenary"
+  ],
+  "cosmeticClass": "spy",
+  "source": {
+   "kind": "tf2-vpk",
+   "label": "Team Fortress 2 (base game VPK)"
+  },
+  "modelPath": "models/player/spy.mdl",
+  "teams": [
+   "red",
+   "blu"
+  ],
+  "teamSkins": {
+   "red": 0,
+   "blu": 1
+  },
+  "skeleton": "tf2-biped",
+  "attribution": "Valve Corporation. Team Fortress 2 assets are not redistributed by SFMC Studio.",
+  "notes": "Base TF2 player model. Loaded from your own TF2 installation (tf2_misc_dir.vpk); never hosted by this site.",
+  "builtin": true
+ },
+ {
+  "id": "community.saxton-hale",
+  "name": "Saxton Hale",
+  "category": "boss",
+  "tags": [
+   "boss",
+   "saxton",
+   "hale",
+   "australian",
+   "vsh"
+  ],
+  "source": {
+   "kind": "workshop",
+   "label": "Community model (SFM Workshop)",
+   "url": "https://steamcommunity.com/workshop/browse/?appid=1840&searchtext=Saxton%20Hale"
+  },
+  "teams": [
+   "red",
+   "blu"
+  ],
+  "skeleton": "unknown",
+  "attribution": "Saxton Hale is a Valve character. Community models belong to their respective authors.",
+  "notes": "TF2 does not ship a Saxton Hale player model in its base VPKs (verified against tf2_misc_dir.vpk). Download a model you are allowed to use from the SFM Workshop, import its files on the Imports page and link them to this entry. Skeleton and cosmetic compatibility depend on the model you import.",
+  "builtin": true
+ },
+ {
+  "id": "community.female-scout",
+  "name": "Female Scout (FemScout)",
+  "category": "female-variant",
+  "tags": [
+   "female",
+   "scout",
+   "femscout",
+   "community"
+  ],
+  "cosmeticClass": "scout",
+  "source": {
+   "kind": "workshop",
+   "label": "Community model (SFM Workshop)",
+   "url": "https://steamcommunity.com/workshop/browse/?appid=1840&searchtext=Female%20Scout%20TF2"
+  },
+  "teams": [
+   "red",
+   "blu"
+  ],
+  "skeleton": "unknown",
+  "attribution": "Community model by its respective author. Based on Valve characters.",
+  "notes": "Not part of TF2. Import a Female Scout (FemScout) model you are permitted to use and link it here. Official scout cosmetics only fit if the model keeps the standard TF2 scout skeleton (bip_* bone names); otherwise expect misplaced or unweighted parts.",
+  "builtin": true
+ },
+ {
+  "id": "community.female-soldier",
+  "name": "Female Soldier",
+  "category": "female-variant",
+  "tags": [
+   "female",
+   "soldier",
+   "femsoldier",
+   "community"
+  ],
+  "cosmeticClass": "soldier",
+  "source": {
+   "kind": "workshop",
+   "label": "Community model (SFM Workshop)",
+   "url": "https://steamcommunity.com/workshop/browse/?appid=1840&searchtext=Female%20Soldier%20TF2"
+  },
+  "teams": [
+   "red",
+   "blu"
+  ],
+  "skeleton": "unknown",
+  "attribution": "Community model by its respective author. Based on Valve characters.",
+  "notes": "Not part of TF2. Import a Female Soldier model you are permitted to use and link it here. Official soldier cosmetics only fit if the model keeps the standard TF2 soldier skeleton (bip_* bone names); otherwise expect misplaced or unweighted parts.",
+  "builtin": true
+ },
+ {
+  "id": "community.female-pyro",
+  "name": "Female Pyro",
+  "category": "female-variant",
+  "tags": [
+   "female",
+   "pyro",
+   "fempyro",
+   "community"
+  ],
+  "cosmeticClass": "pyro",
+  "source": {
+   "kind": "workshop",
+   "label": "Community model (SFM Workshop)",
+   "url": "https://steamcommunity.com/workshop/browse/?appid=1840&searchtext=Female%20Pyro%20TF2"
+  },
+  "teams": [
+   "red",
+   "blu"
+  ],
+  "skeleton": "unknown",
+  "attribution": "Community model by its respective author. Based on Valve characters.",
+  "notes": "Not part of TF2. Import a Female Pyro model you are permitted to use and link it here. Official pyro cosmetics only fit if the model keeps the standard TF2 pyro skeleton (bip_* bone names); otherwise expect misplaced or unweighted parts.",
+  "builtin": true
+ },
+ {
+  "id": "community.female-demoman",
+  "name": "Female Demoman",
+  "category": "female-variant",
+  "tags": [
+   "female",
+   "demoman",
+   "femdemo",
+   "community"
+  ],
+  "cosmeticClass": "demoman",
+  "source": {
+   "kind": "workshop",
+   "label": "Community model (SFM Workshop)",
+   "url": "https://steamcommunity.com/workshop/browse/?appid=1840&searchtext=Female%20Demoman%20TF2"
+  },
+  "teams": [
+   "red",
+   "blu"
+  ],
+  "skeleton": "unknown",
+  "attribution": "Community model by its respective author. Based on Valve characters.",
+  "notes": "Not part of TF2. Import a Female Demoman model you are permitted to use and link it here. Official demoman cosmetics only fit if the model keeps the standard TF2 demoman skeleton (bip_* bone names); otherwise expect misplaced or unweighted parts.",
+  "builtin": true
+ },
+ {
+  "id": "community.female-heavy",
+  "name": "Female Heavy",
+  "category": "female-variant",
+  "tags": [
+   "female",
+   "heavy",
+   "femheavy",
+   "community"
+  ],
+  "cosmeticClass": "heavy",
+  "source": {
+   "kind": "workshop",
+   "label": "Community model (SFM Workshop)",
+   "url": "https://steamcommunity.com/workshop/browse/?appid=1840&searchtext=Female%20Heavy%20TF2"
+  },
+  "teams": [
+   "red",
+   "blu"
+  ],
+  "skeleton": "unknown",
+  "attribution": "Community model by its respective author. Based on Valve characters.",
+  "notes": "Not part of TF2. Import a Female Heavy model you are permitted to use and link it here. Official heavy cosmetics only fit if the model keeps the standard TF2 heavy skeleton (bip_* bone names); otherwise expect misplaced or unweighted parts.",
+  "builtin": true
+ },
+ {
+  "id": "community.female-engineer",
+  "name": "Female Engineer",
+  "category": "female-variant",
+  "tags": [
+   "female",
+   "engineer",
+   "femengineer",
+   "community"
+  ],
+  "cosmeticClass": "engineer",
+  "source": {
+   "kind": "workshop",
+   "label": "Community model (SFM Workshop)",
+   "url": "https://steamcommunity.com/workshop/browse/?appid=1840&searchtext=Female%20Engineer%20TF2"
+  },
+  "teams": [
+   "red",
+   "blu"
+  ],
+  "skeleton": "unknown",
+  "attribution": "Community model by its respective author. Based on Valve characters.",
+  "notes": "Not part of TF2. Import a Female Engineer model you are permitted to use and link it here. Official engineer cosmetics only fit if the model keeps the standard TF2 engineer skeleton (bip_* bone names); otherwise expect misplaced or unweighted parts.",
+  "builtin": true
+ },
+ {
+  "id": "community.female-medic",
+  "name": "Female Medic",
+  "category": "female-variant",
+  "tags": [
+   "female",
+   "medic",
+   "femmedic",
+   "community"
+  ],
+  "cosmeticClass": "medic",
+  "source": {
+   "kind": "workshop",
+   "label": "Community model (SFM Workshop)",
+   "url": "https://steamcommunity.com/workshop/browse/?appid=1840&searchtext=Female%20Medic%20TF2"
+  },
+  "teams": [
+   "red",
+   "blu"
+  ],
+  "skeleton": "unknown",
+  "attribution": "Community model by its respective author. Based on Valve characters.",
+  "notes": "Not part of TF2. Import a Female Medic model you are permitted to use and link it here. Official medic cosmetics only fit if the model keeps the standard TF2 medic skeleton (bip_* bone names); otherwise expect misplaced or unweighted parts.",
+  "builtin": true
+ },
+ {
+  "id": "community.female-sniper",
+  "name": "Female Sniper",
+  "category": "female-variant",
+  "tags": [
+   "female",
+   "sniper",
+   "femsniper",
+   "community"
+  ],
+  "cosmeticClass": "sniper",
+  "source": {
+   "kind": "workshop",
+   "label": "Community model (SFM Workshop)",
+   "url": "https://steamcommunity.com/workshop/browse/?appid=1840&searchtext=Female%20Sniper%20TF2"
+  },
+  "teams": [
+   "red",
+   "blu"
+  ],
+  "skeleton": "unknown",
+  "attribution": "Community model by its respective author. Based on Valve characters.",
+  "notes": "Not part of TF2. Import a Female Sniper model you are permitted to use and link it here. Official sniper cosmetics only fit if the model keeps the standard TF2 sniper skeleton (bip_* bone names); otherwise expect misplaced or unweighted parts.",
+  "builtin": true
+ },
+ {
+  "id": "community.female-spy",
+  "name": "Female Spy",
+  "category": "female-variant",
+  "tags": [
+   "female",
+   "spy",
+   "femspy",
+   "community"
+  ],
+  "cosmeticClass": "spy",
+  "source": {
+   "kind": "workshop",
+   "label": "Community model (SFM Workshop)",
+   "url": "https://steamcommunity.com/workshop/browse/?appid=1840&searchtext=Female%20Spy%20TF2"
+  },
+  "teams": [
+   "red",
+   "blu"
+  ],
+  "skeleton": "unknown",
+  "attribution": "Community model by its respective author. Based on Valve characters.",
+  "notes": "Not part of TF2. Import a Female Spy model you are permitted to use and link it here. Official spy cosmetics only fit if the model keeps the standard TF2 spy skeleton (bip_* bone names); otherwise expect misplaced or unweighted parts.",
+  "builtin": true
+ },
+ {
+  "id": "demo.mannequin",
+  "name": "SFMC Mannequin",
+  "category": "demo",
+  "tags": [
+   "demo",
+   "mannequin",
+   "test",
+   "original"
+  ],
+  "source": {
+   "kind": "builtin-demo",
+   "label": "Original procedural test model (MIT)"
+  },
+  "teams": [
+   "red",
+   "blu"
+  ],
+  "teamSkins": {
+   "red": 0,
+   "blu": 1
+  },
+  "skeleton": "tf2-biped",
+  "attribution": "Original SFMC Studio test model, generated in code. MIT licensed.",
+  "notes": "A simple rigged mannequin that works without any game files, so the viewer, poses, exports and library can be tried immediately. It uses TF2-style bone names but is not a TF2 character and carries no cosmetics.",
+  "builtin": true
+ }
+]

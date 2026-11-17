@@ -96,7 +96,8 @@ async function main() {
     const it = resolve(raw, G.prefabs);
     const slot = it.item_slot;
     if (it.item_class !== 'tf_wearable' || !['head', 'misc'].includes(slot)) continue;
-    const regions = it.equip_regions ? Object.keys(it.equip_regions) : it.equip_region ? [it.equip_region] : [];
+    const toRegions = (v) => (!v ? [] : typeof v === 'string' ? [v] : Object.keys(v));
+    const regions = [...new Set([...toRegions(it.equip_regions), ...toRegions(it.equip_region)].map((r) => String(r).toLowerCase()))];
     let classes = truthy(it.used_by_classes);
     if (!classes.length) continue;
     const styles = Object.entries(it.visuals?.styles ?? {}).map(([sid, s]) => ({

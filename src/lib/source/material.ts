@@ -24,8 +24,7 @@ export interface SourceMaterial extends MeshStandardMaterial {
 }
 
 const texCache = new Map<string, Promise<Texture | null>>();
-let textureMaxSize = 2048;
-export function setTextureMaxSize(n: number) { textureMaxSize = n; texCache.clear(); }
+import { getTextureMaxSize } from './paths';
 
 export function decodedToTexture(d: DecodedTexture, srgb: boolean): Texture {
   const tex = new DataTexture(d.data, d.width, d.height);
@@ -42,12 +41,12 @@ export function decodedToTexture(d: DecodedTexture, srgb: boolean): Texture {
 
 export function loadTexture(path: string, srgb = true): Promise<Texture | null> {
   const p = `materials/${normalizePath(path).replace(/\.vtf$/, '')}.vtf`;
-  const key = `${p}|${srgb}`;
+  const key = `${p}|${srgb}|${getTextureMaxSize()}`;
   let pr = texCache.get(key);
   if (!pr) {
     pr = assets.read(p).then((buf) => {
       if (!buf) return null;
-      try { return decodedToTexture(decodeVtf(buf, textureMaxSize), srgb); } catch (e) { console.warn('VTF', p, e); return null; }
+      try { return decodedToTexture(decodeVtf(buf, getTextureMaxSize()), srgb); } catch (e) { console.warn('VTF', p, e); return null; }
     });
     texCache.set(key, pr);
   }

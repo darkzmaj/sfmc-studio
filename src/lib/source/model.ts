@@ -1,13 +1,14 @@
 // Assemble a three.js object from MDL + VVD + VTX (LOD 0), with skin families,
 // bodygroups and a shared skeleton that cosmetics can bonemerge onto.
-import { Bone, BufferAttribute, BufferGeometry, Group, Skeleton, SkinnedMesh, type Material } from 'three';
+import { Bone, BufferAttribute, BufferGeometry, Group, Quaternion, Skeleton, SkinnedMesh, Vector3, type Material } from 'three';
 // Vendored MIT parsers (gkjohnson/source-engine-model-loader)
 import { MDLLoader } from './vendor/MDLLoader.js';
 import { VVDLoader } from './vendor/VVDLoader.js';
 import { parseVtx } from './vendor/VTXLoader.js';
 import { assets } from './assets';
 import { loadMaterial, type SourceMaterial } from './material';
-import { normalizePath } from './vpk';
+import { modelFiles, modelAvailable } from './paths';
+export { modelFiles, modelAvailable };
 
 export interface BodygroupInfo { name: string; options: string[] }
 
@@ -33,16 +34,6 @@ export class MissingAssetError extends Error {
   constructor(missing: string[]) { super(`Missing model files: ${missing.join(', ')}`); this.missing = missing; }
 }
 
-/** Paths of the companion files for a model. */
-export function modelFiles(mdlPath: string) {
-  const base = normalizePath(mdlPath).replace(/\.mdl$/, '');
-  return { mdl: `${base}.mdl`, vvd: `${base}.vvd`, vtx: [`${base}.dx90.vtx`, `${base}.dx80.vtx`, `${base}.sw.vtx`, `${base}.vtx`] };
-}
-
-export function modelAvailable(mdlPath: string) {
-  const f = modelFiles(mdlPath);
-  return assets.has(f.mdl) && assets.has(f.vvd) && f.vtx.some((v) => assets.has(v));
-}
 
 export async function loadSourceModel(mdlPath: string): Promise<SourceModel> {
   const f = modelFiles(mdlPath);
@@ -58,7 +49,7 @@ export async function loadSourceModel(mdlPath: string): Promise<SourceModel> {
 
   const mdl = new MDLLoader().parse(mdlBuf);
   const vvd = new VVDLoader().parse(vvdBuf);
-  const vtx = parseVtx(vtxBuf);
+  const vtx = parseVtx(vtxBuf!);
   const warnings: string[] = [];
   if (mdl.header.checksum !== vvd.header.checksum || mdl.header.checksum !== vtx.header.checksum) warnings.push('File checksums do not match (MDL/VVD/VTX from different builds).');
 
@@ -149,7 +140,8 @@ export async function loadSourceModel(mdlPath: string): Promise<SourceModel> {
 export function setSkin(model: SourceModel, family: number) {
   const row = model.skinsTable[Math.min(Math.max(0, family), model.skinsTable.length - 1)] ?? [];
   for (const { mesh } of model.meshes) {
-    const tex: number[] = mesh.userData.textureIndexByGroup;
+    const tex: number[] | undefined = mesh.userData.textureIndexByGroup;
+    if (!tex) continue;
     mesh.geometry.groups.forEach((g, i) => { g.materialIndex = row[tex[i]] ?? tex[i]; });
   }
 }
@@ -178,7 +170,7 @@ export function bonemerge(cosmetic: SourceModel, target: SourceModel): string[] 
     }
     return 0;
   });
-  cosmetic.bones.forEach((b, i) => { if (!byName.has(b.name.toLowerCase())) unmatched.push(b.name); });
+  cosmetic.bones.forEach((b) => { if (!byName.has(b.name.toLowerCase())) unmatched.push(b.name); });
   for (const { mesh } of cosmetic.meshes) {
     const src = mesh.geometry.getAttribute('skinIndex');
     const arr = new Uint16Array(src.count * 4);
@@ -187,6 +179,33 @@ export function bonemerge(cosmetic: SourceModel, target: SourceModel): string[] 
     mesh.bind(target.skeleton, mesh.bindMatrix);
   }
   return unmatched;
+}
+
+/**
+ * TF2 player models are compiled with a reference pose that is not upright (animations stand
+ * them up). Find the rotation that makes pelvis->head point +Z (Source up) and foot->toe point +X
+ * (forward). Returns identity when the needed bones are missing or already aligned.
+ */
+export function uprightCorrection(model: SourceModel): Quaternion {
+  const q = new Quaternion();
+  const find = (...names: string[]) => model.bones.find((b) => names.includes(b.name.toLowerCase()));
+  const pelvis = find('bip_pelvis', 'pelvis', 'valvebiped.bip01_pelvis');
+  const head = find('bip_head', 'head', 'valvebiped.bip01_head1');
+  if (!pelvis || !head) return q;
+  model.group.updateMatrixWorld(true);
+  const inv = model.group.matrixWorld.clone().invert();
+  const pos = (b: Bone) => new Vector3().setFromMatrixPosition(b.matrixWorld).applyMatrix4(inv);
+  const up = pos(head).sub(pos(pelvis)).normalize();
+  if (up.lengthSq() < 0.5) return q;
+  q.setFromUnitVectors(up, new Vector3(0, 0, 1));
+  const foot = find('bip_foot_l', 'bip_foot_r', 'valvebiped.bip01_l_foot');
+  const toe = find('bip_toe_l', 'bip_toe_r', 'valvebiped.bip01_l_toe0');
+  if (foot && toe) {
+    const fwd = pos(toe).sub(pos(foot)).applyQuaternion(q);
+    fwd.z = 0;
+    if (fwd.lengthSq() > 1e-6) q.premultiply(new Quaternion().setFromUnitVectors(fwd.normalize(), new Vector3(1, 0, 0)));
+  }
+  return q;
 }
 
 export function disposeModel(model: SourceModel) {
