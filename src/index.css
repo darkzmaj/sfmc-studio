@@ -306,3 +306,19 @@ dialog.modal::backdrop { background: rgba(8, 7, 6, 0.65); backdrop-filter: blur(
 .pane { min-width: 0; overflow-x: hidden; }
 .editor-left, .editor-right, .editor-center { min-width: 0; }
 .equip-head > * { min-width: 0; }
+
+/* Editor on narrow screens: viewer first, then panels; no horizontal overflow. */
+.editor > * { min-width: 0; }
+@media (max-width: 960px) {
+  .editor { display: flex; flex-direction: column; height: auto; overflow-x: hidden; }
+  .editor-top { order: 0; flex-wrap: wrap; }
+  .editor-top .hint { display: none; }
+  .editor-center { order: 1; height: 58vh; min-height: 320px; flex: none; }
+  .editor-bottom { order: 2; position: sticky; bottom: 0; z-index: 5; padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px)); }
+  .editor-left { order: 3; }
+  .editor-right { order: 4; }
+  .editor-left .pane-flush { height: 70vh; min-height: 420px; }
+  .viewer-hint { display: none; }
+  .editor-bottom .seg { order: 5; width: 100%; justify-content: space-between; }
+  .editor-bottom .seg button { flex: 1; }
+}
