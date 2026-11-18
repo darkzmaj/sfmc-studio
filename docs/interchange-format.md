@@ -57,4 +57,7 @@ The manifest is designed so a future SFM MCP server can, without any guessing:
 
 ## MCP status
 
-No live MCP connection is implemented: the SFM MCP project is unpublished and its real SFM adapter is not finished, so there is no compatible API to talk to. Export is standalone. A future MCP tool can accept a manifest path or JSON body and use the fields above.
+[SFM-MCP](https://github.com/darkzmaj/SFM-MCP) now ships a manifest importer (`sfm_mcp/manifest.py`, tools
+`sfm_character_validate` and `sfm_live_import_character`). It runs locally on the user's PC, validates this format
+strictly, resolves models against the local TF2/SFM install and reports anything missing. Workflow and safety rules:
+[sfm-mcp-import.md](sfm-mcp-import.md). Studio itself does not talk to SFM; the manifest file is the interface.
